@@ -125,14 +125,13 @@ public class RedRight extends LinearOpMode {
                 .build();
 
         TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-33,-11,Math.toRadians(45)))
-                .lineToLinearHeading(new Pose2d(-27,-5,Math.toRadians(45)))
+                .lineToLinearHeading(new Pose2d(22,-42,Math.toRadians(90)))
                 .build();
 
 
         TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(StartToRight.end())
-                .lineToLinearHeading(new Pose2d(-36,-12,Math.toRadians(90)))
-                .lineToConstantHeading(new Vector2d(-12,-12))
+                .lineToLinearHeading(new Pose2d(22,-46,Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(50,-41,Math.toRadians(0)))
                 .build();
 
         TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(StartToLeft.end())
