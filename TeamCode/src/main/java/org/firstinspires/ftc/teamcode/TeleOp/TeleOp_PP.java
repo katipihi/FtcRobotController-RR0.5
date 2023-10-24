@@ -47,8 +47,6 @@ public class TeleOp_PP extends LinearOpMode {
     private Servo grijper;
     BNO055IMU imu;
 
-    //slay
-
 
     @Override
     public void runOpMode() {
