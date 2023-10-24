@@ -3,15 +3,19 @@ package org.firstinspires.ftc.teamcode.Autonomouse;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
-import com.acmerobotics.roadrunner.TrajectoryBuilder;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+
+import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -54,19 +58,24 @@ public class RedRight extends LinearOpMode {
     boolean LEFT = false;
     boolean MIDDLE = false;
     boolean RIGHT = false;
-    MecanumDrive drive;
 
-    public enum State {
-        Start,
-        ToShove1,
-        ToShove2,
-        ToShove3,
-        ToBoard1,
-        ToBoard2,
-        ToBoard3,
+    boolean ParkCorner = false;
+
+    boolean ParkMiddle = true;
+
+    public enum TradWifeState {
+        idol,
+        WaitBeforePush,
+        ToPush,
+        WaitBeforeScore,
+        ToScore,
+        WaitBeforePark,
+        ToPark,
+        FinishedSLAY,
     }
 
-    State currentstate = State.Start;
+    TradWifeState currentstate = TradWifeState.idol;
+    Pose2d startPose = (new Pose2d(-39, -64, Math.toRadians(90)));
 
 
     @Override
@@ -102,15 +111,54 @@ public class RedRight extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         FtcDashboard.getInstance().startCameraStream(webcam, 10);
 
-        drive = new MecanumDrive(hardwareMap, (new Pose2d(-39, -64, Math.toRadians(90))));
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        TrajectoryActionBuilder TrajStartToDropoff = drive.TrajectoryActionBuilder(startPose)
-                .splineToConstantHeading(new Vector2d(-33, -55), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-33, -3), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-33, -10), Math.toRadians(90))
-                .lineToLinearHeading(new Pose2d(-26.5, -4.5, Math.toRadians(45)))
+        drive.setPoseEstimate(startPose);
+
+        TrajectorySequence StartToLeft = drive.trajectorySequenceBuilder(startPose)
+                .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
                 .build();
 
+
+        TrajectorySequence StartToMiddle = drive.trajectorySequenceBuilder(startPose)
+                .lineTo(new Vector2d(12,-33))
+                .build();
+
+        TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(-33,-11,Math.toRadians(45)))
+                .lineToLinearHeading(new Pose2d(-27,-5,Math.toRadians(45)))
+                .build();
+
+
+        TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(StartToRight.end())
+                .lineToLinearHeading(new Pose2d(-36,-12,Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(-12,-12))
+                .build();
+
+        TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(StartToLeft.end())
+                .lineToLinearHeading(new Pose2d(50,-29,Math.toRadians(0)))
+                .build();
+
+        TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(StartToMiddle.end())
+                .lineToLinearHeading(new Pose2d(14 ,-40,Math.toRadians(45)))
+                .splineToLinearHeading(new Pose2d(50,-35.5,Math.toRadians(0)),Math.toRadians(0))
+                .build();
+
+        TrajectorySequence FuckOffToCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(new Pose2d(-36,-12,Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(-12,-12))
+                .build();
+
+        TrajectorySequence FuckOffToMiddle = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(new Pose2d(-36,-12,Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(-12,-12))
+                .build();
+
+        double WaitBeforePush = 1.5;
+        double WaitBeforeScore = 1.5;
+        double WaitBeforePark = 1.5;
+
+        ElapsedTime WaitTimer = new ElapsedTime();
 
         while (!isStarted() && !isStopRequested()) {
             myPipeline.configureBorders(borderLeftX, borderRightX, borderTopY, borderBottomY);
@@ -144,22 +192,93 @@ public class RedRight extends LinearOpMode {
             }
             while (opModeIsActive()) {
                 switch (currentstate) {
-                    case Start:
+                    case idol:
                         if (!drive.isBusy()) {
-                            if (LEFT) {
-                                currentstate = State.ToShove1;
-                            } else if (MIDDLE) {
-                                currentstate = State.ToShove2;
-                            } else if (RIGHT) {
-                                currentstate = State.ToShove3;
-                            } else {
-                                currentstate = State.ToShove1;
-                            }
-                            ;
-                            drive.FollowTrajectoryAction(TrajStartToDropoff);
+                            currentstate = TradWifeState.WaitBeforePush;
                         }
                         break;
+
+                    case WaitBeforePush:
+                        if (!drive.isBusy()) {
+                            WaitTimer.reset();
+                            currentstate = TradWifeState.ToPush;
+                        }
+                        break;
+
+                    case ToPush:
+                        if (WaitTimer.seconds() >= WaitBeforePush) {
+                            if (LEFT){
+                                drive.followTrajectorySequenceAsync(StartToLeft);
+                            } else if (MIDDLE){
+                                drive.followTrajectorySequenceAsync(StartToMiddle);
+                            } else if (RIGHT){
+                                drive.followTrajectorySequenceAsync(StartToRight);
+                            }else {
+                                drive.followTrajectorySequenceAsync(StartToMiddle);
+                            }
+
+                        }
+                        break;
+
+                    case WaitBeforeScore:
+                        if (!drive.isBusy()) {
+                            WaitTimer.reset();
+                        }
+                        break;
+
+                    case ToScore:
+                        if (WaitTimer.seconds() >= WaitBeforeScore) {
+                            if (LEFT){
+                                drive.followTrajectorySequenceAsync(LeftTo1);
+                            } else if (MIDDLE){
+                                drive.followTrajectorySequenceAsync(MiddleTo2);
+                            } else if (RIGHT){
+                                drive.followTrajectorySequenceAsync(RightTo3);
+                            }else {
+                                drive.followTrajectorySequenceAsync(MiddleTo2);
+                            }
+                            currentstate = TradWifeState.WaitBeforePark;
+                        }
+                        break;
+
+                    case WaitBeforePark:
+                        if (!drive.isBusy()) {
+                            WaitTimer.reset();
+                            currentstate = TradWifeState.ToPark;
+                        }
+                        break;
+
+                    case ToPark:
+                        if(WaitTimer.seconds() >= WaitBeforePark) {
+                            currentstate = TradWifeState.FinishedSLAY;
+                            if (ParkCorner){
+                                drive.followTrajectorySequenceAsync(FuckOffToCorner);
+                            } else if (ParkMiddle){
+                                drive.followTrajectorySequenceAsync(FuckOffToCorner);
+                            } else {
+                                drive.followTrajectorySequenceAsync(FuckOffToMiddle);
+                            }
+                        }
+                        break;
+
+                    case FinishedSLAY:
+                        break;
+
                 }
+                // We update drive continuously in the background, regardless of state
+                drive.update();
+                // We update our lift PID continuously in the background, regardless of state
+
+                // Read pose
+                Pose2d poseEstimate = drive.getPoseEstimate();
+
+                PoseStorage.currentPose = poseEstimate;
+
+                // Print pose to telemetry
+                telemetry.addData("x", poseEstimate.getX());
+                telemetry.addData("y", poseEstimate.getY());
+                telemetry.addData("heading", poseEstimate.getHeading());
+                telemetry.update();
             }
         }
     }
