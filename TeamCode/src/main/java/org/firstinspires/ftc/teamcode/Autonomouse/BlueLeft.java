@@ -3,20 +3,22 @@ package org.firstinspires.ftc.teamcode.Autonomouse;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.RoadRunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
+@Disabled
 @Autonomous
 public class BlueLeft extends LinearOpMode {
     private DcMotor leftFront;
@@ -48,7 +50,6 @@ public class BlueLeft extends LinearOpMode {
     // Pink Range                                      Y      Cr     Cb
     public static Scalar scalarLowerYCrCb = new Scalar(0.0, 160.0, 100.0);
     public static Scalar scalarUpperYCrCb = new Scalar(255.0, 255.0, 255.0);
-    MecanumDrive drive;
 
 
 
@@ -85,7 +86,7 @@ public class BlueLeft extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         FtcDashboard.getInstance().startCameraStream(webcam, 10);
 
-        drive = new MecanumDrive(hardwareMap,(new Pose2d(-39,-64,Math.toRadians(90))));
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         telemetry.update();
 

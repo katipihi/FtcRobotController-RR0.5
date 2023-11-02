@@ -59,9 +59,16 @@ public class RedRight extends LinearOpMode {
     boolean MIDDLE = false;
     boolean RIGHT = false;
 
+    boolean PushWait = true;
+    boolean ScoreWait = false;
+    boolean ParkWait = false;
     boolean ParkCorner = false;
-
     boolean ParkMiddle = true;
+    double waitstick;
+    double WaitBeforePush = 1.5;
+    double WaitBeforeScore = 1.5;
+    double WaitBeforePark = 1.5;
+
 
     public enum TradWifeState {
         idol,
@@ -94,17 +101,11 @@ public class RedRight extends LinearOpMode {
         {
             @Override
             public void onOpened()
-            {
-                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
-            }
-
+            { webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);}
             @Override
             public void onError(int errorCode)
-            {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
-            }
+            { /** This will be called if the camera could not be opened**/}
+
         });
         // Only if you are using ftcdashboard
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -118,44 +119,32 @@ public class RedRight extends LinearOpMode {
         TrajectorySequence StartToLeft = drive.trajectorySequenceBuilder(startPose)
                 .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
                 .build();
-
-
         TrajectorySequence StartToMiddle = drive.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(12,-33))
                 .build();
-
         TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(22,-42,Math.toRadians(90)))
                 .build();
-
-
         TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(StartToRight.end())
                 .lineToLinearHeading(new Pose2d(22,-46,Math.toRadians(90)))
                 .lineToLinearHeading(new Pose2d(50,-41,Math.toRadians(0)))
                 .build();
-
         TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(StartToLeft.end())
                 .lineToLinearHeading(new Pose2d(50,-29,Math.toRadians(0)))
                 .build();
-
         TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(StartToMiddle.end())
                 .lineToLinearHeading(new Pose2d(14 ,-40,Math.toRadians(45)))
                 .splineToLinearHeading(new Pose2d(50,-35.5,Math.toRadians(0)),Math.toRadians(0))
                 .build();
-
         TrajectorySequence FuckOffToCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(new Pose2d(-36,-12,Math.toRadians(90)))
                 .lineToConstantHeading(new Vector2d(-12,-12))
                 .build();
-
         TrajectorySequence FuckOffToMiddle = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(new Pose2d(-36,-12,Math.toRadians(90)))
                 .lineToConstantHeading(new Vector2d(-12,-12))
                 .build();
 
-        double WaitBeforePush = 1.5;
-        double WaitBeforeScore = 1.5;
-        double WaitBeforePark = 1.5;
 
         ElapsedTime WaitTimer = new ElapsedTime();
 
@@ -167,28 +156,72 @@ public class RedRight extends LinearOpMode {
             // Only use this line of the code when you want to find the lower and upper values
 
             telemetry.addData("RectArea: ", myPipeline.getRectArea());
-            telemetry.update();
+            telemetry.addData("MidPointX: ", myPipeline.getRectMidpointX());
 
-            if (myPipeline.getRectArea() > 2000) {
-                if (myPipeline.getRectMidpointX() > 400) {
-                    LEFT = true;
-                    MIDDLE = false;
-                    RIGHT = false;
-                    telemetry.addLine("Tag 1 found :(");
-                } else if (myPipeline.getRectMidpointX() > 200) {
-                    MIDDLE = true;
-                    LEFT = false;
-                    RIGHT = false;
-                    telemetry.addLine("Tag 2 found :(");
-                } else {
+            if(myPipeline.getRectArea() > 2000){
+                if(myPipeline.getRectMidpointX() > 400){
                     RIGHT = true;
                     LEFT = false;
                     MIDDLE = false;
-                    telemetry.addLine("Tag 3 found :(");
-                }
-
-
+                    telemetry.addLine("RECHTSSLET");
+                } else if(myPipeline.getRectMidpointX() > 200){
+                    RIGHT = false;
+                    LEFT = false;
+                    MIDDLE = true;
+                    telemetry.addLine("MIDDENHOER");
+                } else {
+                    RIGHT = false;
+                    LEFT = true;
+                    MIDDLE = false;}
+                    telemetry.addLine("LINKSBITCH");
             }
+
+            waitstick = -(gamepad1.right_stick_y/50000);
+            if (PushWait){
+                telemetry.addLine("Changing Wait Before Push");
+                WaitBeforePush += waitstick;
+            } if (ScoreWait){
+                telemetry.addLine("Changing Wait Before Score ");
+                WaitBeforeScore += waitstick;
+            } if (ParkWait){
+                telemetry.addLine("Changing Wait Before Park");
+                WaitBeforePark += waitstick;
+            }
+            telemetry.addLine();
+            telemetry.addData("a: Wait Before Push ","%.2f",WaitBeforePush);
+            telemetry.addData("b: Wait Before Score","%.2f",WaitBeforeScore);
+            telemetry.addData("y: Wait Before Park","%.2f",WaitBeforePark);
+            telemetry.addLine();
+            if (ParkCorner){
+                telemetry.addLine("Park in the Corner:}");
+            } if (ParkMiddle){
+                telemetry.addLine("Park in the Middle:}");
+            }
+            telemetry.addLine();
+            telemetry.addLine("Right Trigger = Park in Corner");
+            telemetry.addLine("Left Trigger = Park in Middle");
+            if (gamepad1.a) {
+                PushWait = true;
+                ScoreWait = false;
+                ParkWait = false;
+            } if (gamepad1.b) {
+                PushWait = false;
+                ScoreWait = true;
+                ParkWait = false;
+            } if (gamepad1.y) {
+                PushWait = false;
+                ScoreWait = false;
+                ParkWait = true;
+            } if (gamepad1.right_trigger>0.02){
+                ParkCorner = true;
+                ParkMiddle = false;
+            } if (gamepad1.left_trigger>0.02){
+                ParkCorner = false;
+                ParkMiddle = true;
+            }
+
+
+            telemetry.update();
             while (opModeIsActive()) {
                 switch (currentstate) {
                     case idol:
