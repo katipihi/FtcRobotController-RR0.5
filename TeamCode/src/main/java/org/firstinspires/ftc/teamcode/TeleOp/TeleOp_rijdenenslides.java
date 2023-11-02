@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
 
 //@Disabled
 @Config
-@TeleOp(name="TeleOp_Alleen Rijden", group="linop")
+@TeleOp(name="TeleOp_Rijden en Slides", group="linop")
 public class TeleOp_rijdenenslides extends LinearOpMode {
 
     public static double turnfactor;
