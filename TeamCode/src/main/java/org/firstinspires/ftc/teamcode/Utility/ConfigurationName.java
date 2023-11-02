@@ -14,7 +14,7 @@ public class ConfigurationName {
     public static String leftEncoder = "flm";
 
     // Crane
-    public static String craneArm = "lns";
+    public static String slides = "sli";
 
     // Servo
     public static String grijper = "csv";

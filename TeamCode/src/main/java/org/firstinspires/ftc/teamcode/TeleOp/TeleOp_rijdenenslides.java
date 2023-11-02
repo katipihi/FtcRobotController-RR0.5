@@ -1,38 +1,18 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.down;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.high;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.low;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.middle;
-
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.lynx.commands.core.LynxResetMotorEncoderCommand;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
-import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
-
 
 //@Disabled
 @Config
-@TeleOp(name="TeleOp_Full", group="linop")
-public class TeleOp_PP extends LinearOpMode {
-
-
-    boolean Drivetrain = true;
-    boolean Slides = true;
-    boolean pickup = true;
-
-
-    boolean AlwaysTrue = true;
+@TeleOp(name="TeleOp_Alleen Rijden", group="linop")
+public class TeleOp_rijdenenslides extends LinearOpMode {
 
     public static double turnfactor;
     public static double maxspeed;
@@ -42,11 +22,9 @@ public class TeleOp_PP extends LinearOpMode {
     private DcMotor rightRear;
     private DcMotor leftFront;
     private DcMotor rightFront;
-    private DcMotor cranearm;
+    private DcMotor slides;
 
-    private Servo grijper;
     BNO055IMU imu;
-
 
     @Override
     public void runOpMode() {
@@ -69,8 +47,10 @@ public class TeleOp_PP extends LinearOpMode {
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightRear.setDirection(DcMotor.Direction.REVERSE);
 
-
-        grijper = hardwareMap.servo.get(ConfigurationName.grijper);
+        slides = hardwareMap.dcMotor.get(ConfigurationName.slides);
+        slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slides.setDirection(DcMotor.Direction.REVERSE);
+        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
@@ -87,60 +67,24 @@ public class TeleOp_PP extends LinearOpMode {
 
 
         while (opModeIsActive()) {
+            double cl = -gamepad2.left_stick_y; // Remember, this is reversed!
+            double cr = -gamepad2.right_stick_y; // Counteract imperfect strafing
 
-           if (Slides) {
-               if (gamepad2.b) {
-                   cranearm.setTargetPosition(down);
-                   cranearm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-               } else if (gamepad2.y) {
-                   cranearm.setTargetPosition(high);
-                   cranearm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-               } else if (gamepad2.x) {
-                   cranearm.setTargetPosition(middle);
-                   cranearm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-               } else if (gamepad2.a) {
-                   cranearm.setTargetPosition(low);
-                   cranearm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-               }
+            double slidespower = (cl / 1.5) + (cr / 2.5);
 
-               double cl = -gamepad2.left_stick_y; // Remember, this is reversed!
-               double cr = -gamepad2.right_stick_y; // Counteract imperfect strafing
-
-               double cranearmpower = (cl / 1.5) + (cr / 2.5);
+            if (slides.isBusy() && slidespower == 0) {
+                slides.setPower(0.5);
+            } else if (slides.isBusy() && slidespower != 0) {
+                slides.setPower(0.5);
+            } else if (slides.isBusy() == false && slidespower != 0) {
+                slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                slides.setPower(slidespower);
+            } else if (slides.isBusy() == false && slidespower == 0) {
+                slides.setPower(0);
+            }
 
 
-               if (cranearm.isBusy() && cranearmpower == 0) {
-                   cranearm.setPower(0.5);
-               } else if (cranearm.isBusy() && cranearmpower != 0) {
-                   cranearm.setPower(0.5);
-               } else if (cranearm.isBusy() == false && cranearmpower != 0) {
-                   cranearm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                   cranearm.setPower(cranearmpower);
-               } else if (cranearm.isBusy() == false && cranearmpower == 0) {
-                   cranearm.setPower(0);
-               }
-
-               FtcDashboard dashboard = FtcDashboard.getInstance();
-               Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
-               dashboardTelemetry.addData("Current Pos:", cranearm.getCurrentPosition());
-               dashboardTelemetry.addData("Target Pos:", cranearm.getTargetPosition());
-
-               dashboardTelemetry.update();
-           }
-
-
-           if (pickup) {
-               if (Math.abs(gamepad2.left_trigger) > 0.02) {
-                   grijper.setPosition(GlobalValues.servoopen);
-               } else if (Math.abs(gamepad2.right_trigger) > 0.02) {
-                   grijper.setPosition(GlobalValues.servoclosed);
-               }
-           }
-
-
-           if (Drivetrain) {
-               if (Math.abs(gamepad1.right_trigger) < 0.02) {
+            if (Math.abs(gamepad1.right_trigger) < 0.02) {
                    turnfactor = 0.9;
                    maxspeed = 1.2;
 
@@ -154,6 +98,17 @@ public class TeleOp_PP extends LinearOpMode {
 
                }
 
+            if (gamepad1.a) {
+                turnfactor = 0.9;
+                maxspeed = 1.2;
+
+                leftFront.setPower(0);
+                leftRear.setPower(0);
+                rightFront.setPower(0);
+                rightRear.setPower(0);
+
+            }
+
                double y = -gamepad1.left_stick_y; // Remember, this is reversed!
                double x = gamepad1.left_stick_x; // Counteract imperfect strafing
                double rx = gamepad1.right_stick_x;
@@ -162,9 +117,6 @@ public class TeleOp_PP extends LinearOpMode {
 
                if (gamepad1.left_bumper&&gamepad1.right_bumper){
                    imu.initialize(parameters);
-               }
-               if (gamepad2.left_bumper&&gamepad2.right_bumper){
-                   cranearm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                }
 
                double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
@@ -184,5 +136,5 @@ public class TeleOp_PP extends LinearOpMode {
 
         }
 
-    }}
+    }
 
