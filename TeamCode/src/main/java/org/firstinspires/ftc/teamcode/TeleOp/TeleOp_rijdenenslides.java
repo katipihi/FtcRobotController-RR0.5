@@ -72,7 +72,7 @@ public class TeleOp_rijdenenslides extends LinearOpMode {
 
             double slidespower = (cl / 1.5) + (cr / 2.5);
 
-            if (slides.isBusy() && slidespower == 0) {
+             if (slides.isBusy() && slidespower == 0) {
                 slides.setPower(0.5);
             } else if (slides.isBusy() && slidespower != 0) {
                 slides.setPower(0.5);
@@ -132,9 +132,13 @@ public class TeleOp_rijdenenslides extends LinearOpMode {
                leftRear.setPower(backLeftPower);
                rightFront.setPower(frontRightPower);
                rightRear.setPower(backRightPower);
-            }
+               telemetry.addData("Slides Plaats: ", slides.getCurrentPosition());
+//               telemetry.addData("Snelheid: ", imu.getVelocity());
+               telemetry.update();
 
         }
+
+    }
 
     }
 
