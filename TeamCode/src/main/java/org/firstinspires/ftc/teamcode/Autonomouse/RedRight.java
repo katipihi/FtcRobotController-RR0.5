@@ -82,7 +82,7 @@ public class RedRight extends LinearOpMode {
     }
 
     TradWifeState currentstate = TradWifeState.idol;
-    Pose2d startPose = (new Pose2d(-39, -64, Math.toRadians(90)));
+    Pose2d startPose = (new Pose2d(10, -64, Math.toRadians(90)));
 
 
     @Override
