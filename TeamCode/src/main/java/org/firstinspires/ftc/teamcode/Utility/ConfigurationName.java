@@ -17,6 +17,9 @@ public class ConfigurationName {
     public static String slides = "sli";
 
     // Servo
-    public static String grijper = "csv";
+    public static String twist = "dra";
+    public static String rechtsklauw = "rkl";
+    public static String linksklauw = "lkl";
+
 
 }
