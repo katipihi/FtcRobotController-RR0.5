@@ -19,13 +19,13 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
     public static double maxspeed;
 
     public static double twistpickup = 0.13;
-    public static double twistdrop = 0.785;
-    public static double linksdrop = 0.9;
-    public static double linkspickup = 0.6;
+    public static double twistdrop = 0.81;
+    public static double linksdrop = 0.88;
+    public static double linkspickup = 0.62;
     public static double links1drop = 0.7;
-    public static double rechtsdrop = 0.15;
+    public static double rechtsdrop = 0.14;
     public static double rechtspickup = 0.45;
-    public static double rechts1drop = 0.6;
+    public static double rechts1drop = 0.3;
 
 
     private DcMotor leftRear;
@@ -93,10 +93,15 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                 rechtsklauw.setPosition(rechtspickup);
             }
 
-            if (gamepad2.dpad_down){
-                twist.setPosition(twistpickup);
-            } else if (gamepad2.dpad_up && slides.getCurrentPosition()>230){
+            if (gamepad2.right_stick_button){
                 twist.setPosition(twistdrop);
+            }
+            if (gamepad2.left_stick_button && slides.getCurrentPosition()>250){
+                twist.setPosition(twistpickup);
+            }
+            if(gamepad2.left_bumper){
+                slides.setTargetPosition(slides.getCurrentPosition()+15);
+                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
             if(gamepad2.a){
@@ -118,6 +123,7 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
             telemetry.addData("Rechts: ",rechtsklauw.getPosition());
             telemetry.addData("Pols: ",twist.getPosition());
             telemetry.addData("Slides: ",slides.getCurrentPosition());
+            telemetry.addData("SlidesTarget: ",slides.getTargetPosition());
             telemetry.update();
 
 
@@ -171,7 +177,7 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
                double botHeading = -imu.getAngularOrientation().firstAngle;
 
-               if (gamepad1.left_bumper&&gamepad1.right_bumper){
+               if (gamepad1.right_bumper){
                    imu.initialize(parameters);
                }
 
