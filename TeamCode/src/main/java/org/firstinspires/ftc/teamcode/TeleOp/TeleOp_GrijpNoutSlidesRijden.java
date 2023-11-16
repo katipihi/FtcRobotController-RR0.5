@@ -26,7 +26,12 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
     public static double rechtsdrop = 0.14;
     public static double rechtspickup = 0.45;
     public static double rechts1drop = 0.3;
-
+    public enum Slideys {
+        GROUND,
+        Middle,
+        Twist,
+        Up,
+    }
 
     private DcMotor leftRear;
     
@@ -37,6 +42,8 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
     private Servo twist;
     private Servo linksklauw;
     private Servo rechtsklauw;
+    private boolean TWISTY;
+
 
     BNO055IMU imu;
 
@@ -89,7 +96,8 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
         while (opModeIsActive()) {
             if (gamepad2.left_trigger>0.02){
                 linksklauw.setPosition(linkspickup);
-            } else if (gamepad2.right_trigger>0.02){
+            }
+            if (gamepad2.right_trigger>0.02){
                 rechtsklauw.setPosition(rechtspickup);
             }
 
@@ -99,6 +107,8 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
             if (gamepad2.left_stick_button && slides.getCurrentPosition()>250){
                 twist.setPosition(twistpickup);
             }
+
+
             if(gamepad2.left_bumper){
                 slides.setTargetPosition(slides.getCurrentPosition()+15);
                 slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -115,9 +125,9 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                 linksklauw.setPosition(linksdrop);
             }
             if (gamepad2.y){
-                slides.setTargetPosition(580);
+                slides.setTargetPosition(300);
                 slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+                twist.setPosition(twistpickup);
             }
             telemetry.addData("Links: ",linksklauw.getPosition());
             telemetry.addData("Rechts: ",rechtsklauw.getPosition());
