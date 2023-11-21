@@ -82,7 +82,7 @@ public class RedRight extends LinearOpMode {
     }
 
     TradWifeState currentstate = TradWifeState.idol;
-    Pose2d startPose = (new Pose2d(10, -64, Math.toRadians(90)));
+    Pose2d startPose = (new Pose2d(10, -62, Math.toRadians(90)));
 
 
     @Override
@@ -126,7 +126,7 @@ public class RedRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(22,-42,Math.toRadians(90)))
                 .build();
         TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(StartToRight.end())
-                .lineToLinearHeading(new Pose2d(22,-46,Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(22,-48,Math.toRadians(90)))
                 .lineToLinearHeading(new Pose2d(50,-41,Math.toRadians(0)))
                 .build();
         TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(StartToLeft.end())

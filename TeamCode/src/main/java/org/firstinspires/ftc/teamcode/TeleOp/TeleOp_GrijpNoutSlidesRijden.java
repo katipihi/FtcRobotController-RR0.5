@@ -18,8 +18,8 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
     public static double turnfactor;
     public static double maxspeed;
 
-    public static double twistpickup = 0.13;
-    public static double twistdrop = 0.81;
+    public static double twistdrop = 0.13;
+    public static double twistpickup= 0.81;
     public static double linksdrop = 0.88;
     public static double linkspickup = 0.62;
     public static double links1drop = 0.7;
@@ -102,10 +102,10 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
             }
 
             if (gamepad2.right_stick_button){
-                twist.setPosition(twistdrop);
+                twist.setPosition(twistpickup);
             }
             if (gamepad2.left_stick_button && slides.getCurrentPosition()>250){
-                twist.setPosition(twistpickup);
+                twist.setPosition(twistdrop);
             }
 
 
@@ -127,7 +127,7 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
             if (gamepad2.y){
                 slides.setTargetPosition(300);
                 slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                twist.setPosition(twistpickup);
+                twist.setPosition(twistdrop);
             }
             telemetry.addData("Links: ",linksklauw.getPosition());
             telemetry.addData("Rechts: ",rechtsklauw.getPosition());

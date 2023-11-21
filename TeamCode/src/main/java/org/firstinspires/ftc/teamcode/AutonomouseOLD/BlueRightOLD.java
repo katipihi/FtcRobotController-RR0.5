@@ -1,17 +1,15 @@
-package org.firstinspires.ftc.teamcode.Autonomouse;
+package org.firstinspires.ftc.teamcode.AutonomouseOLD;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Autonomouse.ContourPipeline;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -20,7 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Config
 @Disabled
 @Autonomous
-public class BlueLeft extends LinearOpMode {
+public class BlueRightOLD extends LinearOpMode {
     private DcMotor leftFront;
     private DcMotor rightFront;
     private DcMotor leftRear;
@@ -52,7 +50,6 @@ public class BlueLeft extends LinearOpMode {
     public static Scalar scalarUpperYCrCb = new Scalar(255.0, 255.0, 255.0);
 
 
-
     @Override
     public void runOpMode() throws InterruptedException {
         // OpenCV webcam
@@ -60,22 +57,19 @@ public class BlueLeft extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         //OpenCV Pipeline
         ContourPipeline myPipeline;
-        webcam.setPipeline(myPipeline = new ContourPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY));
+        webcam.setPipeline(myPipeline = new ContourPipeline(borderLeftX, borderRightX, borderTopY, borderBottomY));
         // Configuration of Pipeline
-        myPipeline.configureScalarLower(scalarLowerYCrCb.val[0],scalarLowerYCrCb.val[1],scalarLowerYCrCb.val[2]);
-        myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
+        myPipeline.configureScalarLower(scalarLowerYCrCb.val[0], scalarLowerYCrCb.val[1], scalarLowerYCrCb.val[2]);
+        myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0], scalarUpperYCrCb.val[1], scalarUpperYCrCb.val[2]);
         // Webcam Streaming
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
+            public void onOpened() {
                 webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
-            public void onError(int errorCode)
-            {
+            public void onError(int errorCode) {
                 /*
                  * This will be called if the camera could not be opened
                  */
@@ -86,9 +80,6 @@ public class BlueLeft extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         FtcDashboard.getInstance().startCameraStream(webcam, 10);
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-
-        telemetry.update();
 
         while (!isStarted() && !isStopRequested()) {
             myPipeline.configureBorders(borderLeftX, borderRightX, borderTopY, borderBottomY);
@@ -117,8 +108,6 @@ public class BlueLeft extends LinearOpMode {
                     MIDDLE = false;
                     telemetry.addLine("Tag 3 found :(");
                 }
-                telemetry.update();
-                sleep(20);
 
 
             }
