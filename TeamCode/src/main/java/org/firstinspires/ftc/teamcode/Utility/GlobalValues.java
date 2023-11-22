@@ -9,10 +9,14 @@ public class GlobalValues {
     public static int high = 1600;
     public static int low = 700;
 
-    public static int fivecones = 190;
-    public static int fourcones = 165;
-    public static int threecones = 87;
-    public static int twocones = 48;
+    public static double twistdrop = 0.13;
+    public static double twistpickup= 0.81;
+    public static double linksdrop = 0.88;
+    public static double linkspickup = 0.62;
+    public static double links1drop = 0.7;
+    public static double rechtsdrop = 0.14;
+    public static double rechtspickup = 0.45;
+    public static double rechts1drop = 0.3;
 
     public static int baby = 60;
 }
