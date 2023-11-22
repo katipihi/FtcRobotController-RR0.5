@@ -17,6 +17,9 @@ public class MeepMeepTesting {
                         drive.trajectorySequenceBuilder(new Pose2d(-36, -62, Math.toRadians(90)))
                                 .splineToLinearHeading(new Pose2d(-34,-31,Math.toRadians(0)),Math.toRadians(0))
                                 .lineTo(new Vector2d(-38, -31))
+                                .lineTo(new Vector2d(-38, -11))
+                                .lineTo(new Vector2d(10, -11))
+                                .lineTo(new Vector2d(40, -11))
                                 .lineToLinearHeading(new Pose2d(50,-41,Math.toRadians(0)))
                                 .build()
                 );

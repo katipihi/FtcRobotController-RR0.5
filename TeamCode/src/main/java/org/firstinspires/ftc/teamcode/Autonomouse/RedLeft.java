@@ -70,8 +70,11 @@ public class RedLeft extends LinearOpMode {
         idol,
         WaitBeforePush,
         ToPush,
+        Push,
         WaitBeforeScore,
         ToScore,
+        Score,
+        ToScoreAfterMiddle,
         WaitBeforePark,
         ToPark,
         FinishedSLAY,
@@ -125,10 +128,21 @@ public class RedLeft extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(22,-48,Math.toRadians(90)))
                 .lineToLinearHeading(new Pose2d(50,-41,Math.toRadians(0)))
                 .build();
+        TrajectorySequence RightToAfterMiddle3 = drive.trajectorySequenceBuilder(StartToRight.end())
+                .lineToLinearHeading(new Pose2d(22,-48,Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(50,-41,Math.toRadians(0)))
+                .build();
         TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(StartToLeft.end())
                 .lineToLinearHeading(new Pose2d(50,-29,Math.toRadians(0)))
                 .build();
+        TrajectorySequence LeftToAfterMiddle1 = drive.trajectorySequenceBuilder(StartToLeft.end())
+                .lineToLinearHeading(new Pose2d(50,-29,Math.toRadians(0)))
+                .build();
         TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(StartToMiddle.end())
+                .lineToLinearHeading(new Pose2d(14 ,-40,Math.toRadians(45)))
+                .splineToLinearHeading(new Pose2d(50,-35.5,Math.toRadians(0)),Math.toRadians(0))
+                .build();
+        TrajectorySequence MiddleToAfterMiddle2 = drive.trajectorySequenceBuilder(StartToMiddle.end())
                 .lineToLinearHeading(new Pose2d(14 ,-40,Math.toRadians(45)))
                 .splineToLinearHeading(new Pose2d(50,-35.5,Math.toRadians(0)),Math.toRadians(0))
                 .build();
@@ -265,10 +279,23 @@ public class RedLeft extends LinearOpMode {
                             }else {
                                 drive.followTrajectorySequenceAsync(MiddleTo2);
                             }
+                            currentstate = TradWifeState.ToScoreAfterMiddle;
+                        }
+                        break;
+                    case ToScoreAfterMiddle:
+                        if (!drive.isBusy()) {
+                            if (LEFT){
+                                drive.followTrajectorySequenceAsync(LeftToAfterMiddle1);
+                            } else if (MIDDLE){
+                                drive.followTrajectorySequenceAsync(MiddleToAfterMiddle2);
+                            } else if (RIGHT){
+                                drive.followTrajectorySequenceAsync(RightToAfterMiddle3);
+                            }else {
+                                drive.followTrajectorySequenceAsync(MiddleToAfterMiddle2);
+                            }
                             currentstate = TradWifeState.WaitBeforePark;
                         }
                         break;
-
                     case WaitBeforePark:
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
