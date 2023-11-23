@@ -80,7 +80,7 @@ public class RIGHTPUSHPARK extends LinearOpMode {
     }
 
     TradWifeState currentstate = TradWifeState.idol;
-    Pose2d startPose = (new Pose2d(10, -62, Math.toRadians(90)));
+    Pose2d startPose = (new Pose2d(15, -64, Math.toRadians(90)));
 
 
     @Override
@@ -101,7 +101,7 @@ public class RIGHTPUSHPARK extends LinearOpMode {
         {
             @Override
             public void onOpened()
-            { webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);}
+            { webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.SENSOR_NATIVE);}
             @Override
             public void onError(int errorCode)
             { /** This will be called if the camera could not be opened**/}
@@ -147,23 +147,27 @@ public class RIGHTPUSHPARK extends LinearOpMode {
             telemetry.addData("RectArea: ", myPipeline.getRectArea());
             telemetry.addData("MidPointX: ", myPipeline.getRectMidpointX());
 
-            if(myPipeline.getRectArea() > 2000){
-                if(myPipeline.getRectMidpointX() > 400){
+            if(myPipeline.getRectArea() > 2000) {
+                if (myPipeline.getRectMidpointX() > 400) {
                     RIGHT = true;
                     LEFT = false;
                     MIDDLE = false;
                     telemetry.addLine("RECHTSSLET");
-                } else if(myPipeline.getRectMidpointX() > 200){
+                } else if (myPipeline.getRectMidpointX() > 200) {
                     RIGHT = false;
                     LEFT = false;
                     MIDDLE = true;
                     telemetry.addLine("MIDDENHOER");
-                } else {
+                }
+//                if (200 > myPipeline.getRectX())
+                else {
                     RIGHT = false;
                     LEFT = true;
-                    MIDDLE = false;}
+                    MIDDLE = false;
                     telemetry.addLine("LINKSBITCH");
+                }
             }
+
 
             waitstick = -(gamepad1.right_stick_y/50000);
             if (PushWait){
