@@ -8,11 +8,6 @@ public class ConfigurationName {
     public static String rightFront = "rvm";
     public static String rightRear = "ram";
 
-    // Encoders
-    public static String frontEncoder = "frm";
-    public static String rightEncoder = "brm";
-    public static String leftEncoder = "flm";
-
     // Crane
     public static String slides = "sli";
 

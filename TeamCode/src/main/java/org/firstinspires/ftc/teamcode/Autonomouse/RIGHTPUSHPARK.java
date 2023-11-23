@@ -101,7 +101,7 @@ public class RIGHTPUSHPARK extends LinearOpMode {
         {
             @Override
             public void onOpened()
-            { webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.SENSOR_NATIVE);}
+            { webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);}
             @Override
             public void onError(int errorCode)
             { /** This will be called if the camera could not be opened**/}

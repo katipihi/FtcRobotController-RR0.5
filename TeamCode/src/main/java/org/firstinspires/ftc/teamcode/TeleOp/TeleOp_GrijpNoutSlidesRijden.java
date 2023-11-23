@@ -28,11 +28,10 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
     public static double rechts1drop = 0.3;
     public enum Slideys {
         GROUND,
-        Middle,
-        Twist,
-        Up,
+        TWIST,
+        Up
     }
-
+    Slideys slideystate = Slideys.GROUND;
     private DcMotor leftRear;
     
     private DcMotor rightRear;
@@ -42,7 +41,6 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
     private Servo twist;
     private Servo linksklauw;
     private Servo rechtsklauw;
-    private boolean TWISTY;
 
 
     BNO055IMU imu;
@@ -108,37 +106,50 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                 twist.setPosition(twistdrop);
             }
 
-
-            if(gamepad2.left_bumper){
-                slides.setTargetPosition(slides.getCurrentPosition()+15);
-                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-
-            if(gamepad2.a){
+            if(gamepad2.cross){
                 linksklauw.setPosition(links1drop);
                 rechtsklauw.setPosition(rechts1drop);
             }
-            if (gamepad2.x){
+            if (gamepad2.square){
                 rechtsklauw.setPosition(rechtsdrop);
             }
-            if (gamepad2.b){
+            if (gamepad2.circle){
                 linksklauw.setPosition(linksdrop);
             }
-            if (gamepad2.y){
-                slides.setTargetPosition(300);
-                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                twist.setPosition(twistdrop);
+//            if (gamepad2.y){
+//                slides.setTargetPosition(300);
+//                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                twist.setPosition(twistdrop);
+//            }
+            switch (slideystate){
+                case GROUND:
+                    if (gamepad2.triangle){
+                    slides.setTargetPosition(400);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    slideystate = Slideys.TWIST;
+                    }
+                break;
+                case TWIST:
+                    if (Math.abs(slides.getCurrentPosition()- 400)<30){
+                        twist.setPosition(twistdrop);
+                    }
+
+            }
+            if (gamepad2.share && slideystate != Slideys.GROUND) {
+                slideystate = Slideys.GROUND;
             }
             telemetry.addData("Links: ",linksklauw.getPosition());
             telemetry.addData("Rechts: ",rechtsklauw.getPosition());
             telemetry.addData("Pols: ",twist.getPosition());
             telemetry.addData("Slides: ",slides.getCurrentPosition());
             telemetry.addData("SlidesTarget: ",slides.getTargetPosition());
-            telemetry.update();
 
 
 
-
+            if(gamepad2.left_bumper){
+                slides.setTargetPosition(slides.getCurrentPosition()+15);
+                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
             double cl = -gamepad2.left_stick_y; // Remember, this is reversed!
             double cr = -gamepad2.right_stick_y; // Counteract imperfect strafing
 
@@ -204,6 +215,8 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                leftRear.setPower(backLeftPower);
                rightFront.setPower(frontRightPower);
                rightRear.setPower(backRightPower);
+
+               telemetry.update();
             }
 
         }
