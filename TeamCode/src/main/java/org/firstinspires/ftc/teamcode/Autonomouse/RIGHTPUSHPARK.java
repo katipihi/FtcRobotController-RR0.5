@@ -120,7 +120,7 @@ public class RIGHTPUSHPARK extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
                 .build();
         TrajectorySequence StartToMiddle = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(12,-33))
+                .lineTo(new Vector2d(15,-33))
                 .build();
         TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(22,-42,Math.toRadians(90)))

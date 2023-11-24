@@ -132,6 +132,7 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                 case TWIST:
                     if (Math.abs(slides.getCurrentPosition()- 400)<30){
                         twist.setPosition(twistdrop);
+                        slideystate = Slideys.GROUND;
                     }
 
             }
