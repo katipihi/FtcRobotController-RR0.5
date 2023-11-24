@@ -15,6 +15,8 @@ public class ConfigurationName {
     public static String twist = "dra";
     public static String rechtsklauw = "rkl";
     public static String linksklauw = "lkl";
+    public static String lefthang = "lhg";
+    public static String righthang = "rhg";
 
 
 }

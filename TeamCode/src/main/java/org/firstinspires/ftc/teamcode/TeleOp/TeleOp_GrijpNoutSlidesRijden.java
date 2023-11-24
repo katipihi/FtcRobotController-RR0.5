@@ -6,6 +6,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
@@ -26,12 +27,27 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
     public static double rechtsdrop = 0.14;
     public static double rechtspickup = 0.45;
     public static double rechts1drop = 0.3;
+
+    public static double leftlow = 0;
+    public static double rightlow = 0;
+    public static double leftmid = 0.5;
+    public static double rightmid = 0.5;
+    public static double lefthigh = 1.0;
+    public static double righthigh = 1.0;
+
+
     public enum Slideys {
         GROUND,
         TWIST,
         Up
     }
     Slideys slideystate = Slideys.GROUND;
+
+    public enum controls {
+        Normal,
+        Hangplane
+    }
+    controls controlstate = controls.Normal;
     private DcMotor leftRear;
     
     private DcMotor rightRear;
@@ -41,6 +57,9 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
     private Servo twist;
     private Servo linksklauw;
     private Servo rechtsklauw;
+
+    private Servo lefthang;
+    private Servo righthang;
 
 
     BNO055IMU imu;
@@ -77,6 +96,11 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
         linksklauw = hardwareMap.servo.get(ConfigurationName.linksklauw);
 
+        righthang = hardwareMap.servo.get(ConfigurationName.righthang);
+
+        lefthang = hardwareMap.servo.get(ConfigurationName.lefthang);
+
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -92,30 +116,7 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            if (gamepad2.left_trigger>0.02){
-                linksklauw.setPosition(linkspickup);
-            }
-            if (gamepad2.right_trigger>0.02){
-                rechtsklauw.setPosition(rechtspickup);
-            }
 
-            if (gamepad2.right_stick_button){
-                twist.setPosition(twistpickup);
-            }
-            if (gamepad2.left_stick_button && slides.getCurrentPosition()>250){
-                twist.setPosition(twistdrop);
-            }
-
-            if(gamepad2.cross){
-                linksklauw.setPosition(links1drop);
-                rechtsklauw.setPosition(rechts1drop);
-            }
-            if (gamepad2.square){
-                rechtsklauw.setPosition(rechtsdrop);
-            }
-            if (gamepad2.circle){
-                linksklauw.setPosition(linksdrop);
-            }
 //            if (gamepad2.y){
 //                slides.setTargetPosition(300);
 //                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -136,9 +137,84 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                     }
 
             }
-            if (gamepad2.share && slideystate != Slideys.GROUND) {
-                slideystate = Slideys.GROUND;
+            switch (controlstate){
+                case Normal:
+                    if (gamepad2.left_trigger>0.02){
+                        linksklauw.setPosition(linkspickup);
+                    }
+                    if (gamepad2.right_trigger>0.02){
+                        rechtsklauw.setPosition(rechtspickup);
+                    }
+
+                    if (gamepad2.right_stick_button){
+                        twist.setPosition(twistpickup);
+                    }
+                    if (gamepad2.left_stick_button && slides.getCurrentPosition()>250){
+                        twist.setPosition(twistdrop);
+                    }
+
+                    if(gamepad2.cross){
+                        linksklauw.setPosition(links1drop);
+                        rechtsklauw.setPosition(rechts1drop);
+                    }
+                    if (gamepad2.square){
+                        rechtsklauw.setPosition(rechtsdrop);
+                    }
+                    if (gamepad2.circle){
+                        linksklauw.setPosition(linksdrop);
+                    }
+                    if (gamepad2.share && slideystate != Slideys.GROUND) {
+                        slideystate = Slideys.GROUND;
+                    }
+                    if (gamepad2.options){
+                        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    }
+                    if (gamepad2.left_bumper&&gamepad2.right_bumper){
+                        controlstate = controls.Hangplane;
+                    }
+                    telemetry.addLine("NORMALL");
+                    break;
+                case Hangplane:
+                    gamepad2.setLedColor(1,0,0.91, Gamepad.LED_DURATION_CONTINUOUS);
+                    if (gamepad2.dpad_down){
+                        lefthang.setPosition(leftlow);
+                    } if (gamepad2.dpad_left){
+                    lefthang.setPosition(leftmid);
+                    } if (gamepad2.dpad_up){
+                    lefthang.setPosition(lefthigh);
+                    } if (gamepad2.triangle){
+                    righthang.setPosition(righthigh);
+                    } if (gamepad2.circle){
+                    righthang.setPosition(rightmid);
+                    } if (gamepad2.cross){
+                    righthang.setPosition(rightlow);
+                    }
+                    if(gamepad2.options){
+                        controlstate = controls.Normal;
+                    }                     telemetry.addLine("Straynge");
+
+
             }
+
+//            if (gamepad2.right_bumper && gamepad2.left_bumper){
+//                gamepad2.setLedColor(1,0,0.91, Gamepad.LED_DURATION_CONTINUOUS);
+//                if (gamepad2.dpad_down){
+//                    lefthang.setPosition(leftlow);
+//                } if (gamepad2.dpad_left){
+//                    lefthang.setPosition(leftmid);
+//                } if (gamepad2.dpad_up){
+//                    lefthang.setPosition(lefthigh);
+//                }
+//
+//                if (gamepad2.triangle){
+//                    lefthang.setPosition(righthigh);
+//                } if (gamepad2.circle){
+//                    lefthang.setPosition(rightmid);
+//                } if (gamepad2.cross){
+//                    lefthang.setPosition(rightlow);
+//                }
+//            }
+
             telemetry.addData("Links: ",linksklauw.getPosition());
             telemetry.addData("Rechts: ",rechtsklauw.getPosition());
             telemetry.addData("Pols: ",twist.getPosition());
@@ -199,7 +275,7 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
                double botHeading = -imu.getAngularOrientation().firstAngle;
 
-               if (gamepad1.right_bumper){
+               if (gamepad1.options){
                    imu.initialize(parameters);
                }
 
