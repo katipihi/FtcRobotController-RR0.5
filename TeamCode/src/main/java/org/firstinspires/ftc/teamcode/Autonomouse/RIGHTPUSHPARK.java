@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
 import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
 import org.opencv.core.Scalar;
@@ -85,6 +86,7 @@ public class RIGHTPUSHPARK extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         linksklauw = hardwareMap.servo.get(ConfigurationName.linksklauw);
 
         // OpenCV webcam
@@ -117,13 +119,15 @@ public class RIGHTPUSHPARK extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence StartToLeft = drive.trajectorySequenceBuilder(startPose)
-                .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
+//                .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
+                .lineTo(new Vector2d(15, -35))
+                .lineTo(new Vector2d(1, -35))
                 .build();
         TrajectorySequence StartToMiddle = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(15,-33))
+                .lineTo(new Vector2d(16.5,-31.5))
                 .build();
         TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(22,-42,Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(22,-41,Math.toRadians(90)))
                 .build();
         TrajectorySequence FuckOffToCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(new Pose2d(-36,-12,Math.toRadians(90)))
@@ -249,6 +253,8 @@ public class RIGHTPUSHPARK extends LinearOpMode {
                             currentstate = TradWifeState.ToPark;
                         }
                         break;
+
+
 
 //                    case ToPark:
 //                        if(WaitTimer.seconds() >= WaitBeforePark) {
