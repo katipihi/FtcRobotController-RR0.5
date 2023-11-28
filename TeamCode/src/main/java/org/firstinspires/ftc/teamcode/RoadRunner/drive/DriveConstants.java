@@ -68,8 +68,8 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 50;
     public static double MAX_ACCEL = 50;
-    public static double MAX_ANG_VEL = Math.toRadians(349.376775);
-    public static double MAX_ANG_ACCEL = Math.toRadians(349.376775);
+    public static double MAX_ANG_VEL = Math.toRadians(300);
+    public static double MAX_ANG_ACCEL = Math.toRadians(300);
 
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.

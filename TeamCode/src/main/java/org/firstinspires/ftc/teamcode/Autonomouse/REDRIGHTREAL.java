@@ -5,19 +5,16 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
 import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
 import org.opencv.core.Scalar;
@@ -27,12 +24,16 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
 @Autonomous
-public class RedRight extends LinearOpMode {
+public class REDRIGHTREAL extends LinearOpMode {
+    private DcMotor leftFront;
+    private DcMotor rightFront;
+    private DcMotor leftRear;
+    private DcMotor rightRear;
+    private OpenCvCamera webcam;
     private DcMotor slides;
     private Servo twist;
     private Servo linksklauw;
     private Servo rechtsklauw;
-    private OpenCvCamera webcam;
 
     private static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 360; // height of wanted camera resolution
@@ -61,17 +62,18 @@ public class RedRight extends LinearOpMode {
     boolean LEFT = false;
     boolean MIDDLE = false;
     boolean RIGHT = false;
-    boolean TOUP = false;
 
     boolean PushWait = true;
     boolean ScoreWait = false;
     boolean ParkWait = false;
-    boolean ParkCorner = false;
+    boolean ParkLeft = false;
     boolean ParkMiddle = true;
+    boolean ParkRight = false;
     double waitstick;
     double WaitBeforePush = 1.5;
     double WaitBeforeScore = 1.5;
     double WaitBeforePark = 1.5;
+    double chill = 3;
 
 
     public enum TradWifeState {
@@ -79,57 +81,55 @@ public class RedRight extends LinearOpMode {
         WaitBeforePush,
         ToPush,
         WaitBeforeScore,
+        ToBabyScore,
         ToScore,
         WaitBeforePark,
+        ToBabyPark,
         ToPark,
         FinishedSLAY,
     }
 
     TradWifeState currentstate = TradWifeState.idol;
-
-    public enum Slideys {
-        GROUND,
-        OPEN,
-        UP
-    }
-
-    Slideys slideystate = Slideys.GROUND;
-
-
     Pose2d startPose = (new Pose2d(15, -64, Math.toRadians(90)));
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        slides = hardwareMap.dcMotor.get(ConfigurationName.slides);
-        slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slides.setDirection(DcMotor.Direction.REVERSE);
-        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         twist = hardwareMap.servo.get(ConfigurationName.twist);
 
         rechtsklauw = hardwareMap.servo.get(ConfigurationName.rechtsklauw);
 
         linksklauw = hardwareMap.servo.get(ConfigurationName.linksklauw);
 
+        slides = hardwareMap.dcMotor.get(ConfigurationName.slides);
+        slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slides.setDirection(DcMotor.Direction.REVERSE);
+        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Gamepad currentGamepad1 = new Gamepad();
+        Gamepad currentGamepad2 = new Gamepad();
+
+        Gamepad previousGamepad1 = new Gamepad();
+        Gamepad previousGamepad2 = new Gamepad();
+
+
         // OpenCV webcam
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         //OpenCV Pipeline
         ContourPipeline myPipeline;
-        webcam.setPipeline(myPipeline = new ContourPipeline(borderLeftX, borderRightX, borderTopY, borderBottomY));
+        webcam.setPipeline(myPipeline = new ContourPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY));
         // Configuration of Pipeline
-        myPipeline.configureScalarLower(scalarLowerYCrCb.val[0], scalarLowerYCrCb.val[1], scalarLowerYCrCb.val[2]);
-        myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0], scalarUpperYCrCb.val[1], scalarUpperYCrCb.val[2]);
+        myPipeline.configureScalarLower(scalarLowerYCrCb.val[0],scalarLowerYCrCb.val[1],scalarLowerYCrCb.val[2]);
+        myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
         // Webcam Streaming
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
             @Override
-            public void onOpened() {
-                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
-            }
-
+            public void onOpened()
+            { webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);}
             @Override
-            public void onError(int errorCode) { /** This will be called if the camera could not be opened**/}
+            public void onError(int errorCode)
+            { /** This will be called if the camera could not be opened**/}
 
         });
         // Only if you are using ftcdashboard
@@ -142,39 +142,65 @@ public class RedRight extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence StartToLeft = drive.trajectorySequenceBuilder(startPose)
-                 .lineTo(new Vector2d(15, -35))
-                .lineTo(new Vector2d(1, -35))
+//                .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
+                .lineTo(new Vector2d(15, -38.5))
+                .lineTo(new Vector2d(1, -38.5))
                 .build();
         TrajectorySequence StartToMiddle = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(16.5, -31.5))
+                .lineTo(new Vector2d(16.5,-31.5))
                 .build();
         TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(22, -41, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(22,-41,Math.toRadians(90)))
                 .build();
-        TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(StartToRight.end())
+        TrajectorySequence RightToBaby = drive.trajectorySequenceBuilder(StartToRight.end())
                 .lineToLinearHeading(new Pose2d(22, -48, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(45, -41, Math.toRadians(0)))
                 .build();
-        TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(StartToLeft.end())
+        TrajectorySequence LeftToBaby = drive.trajectorySequenceBuilder(StartToLeft.end())
+                .lineTo(new Vector2d(15,-38.5))
+                .build();
+        TrajectorySequence MiddleToBaby = drive.trajectorySequenceBuilder(StartToMiddle.end())
+                .lineToLinearHeading(new Pose2d(14, -40, Math.toRadians(45)))
+                .build();
+        TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(RightToBaby.end())
+                .lineToLinearHeading(new Pose2d(50, -41, Math.toRadians(0)))
+                .build();
+        TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(LeftToBaby.end())
                 .lineToLinearHeading(new Pose2d(50, -29, Math.toRadians(0)))
                 .build();
-        TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(StartToMiddle.end())
-                .lineToLinearHeading(new Pose2d(14, -40, Math.toRadians(45)))
+        TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(MiddleToBaby.end())
                 .splineToLinearHeading(new Pose2d(50, -35.5, Math.toRadians(0)), Math.toRadians(0))
                 .build();
-        TrajectorySequence FuckOffToCorner = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(-36, -12, Math.toRadians(90)))
-                .lineToConstantHeading(new Vector2d(-12, -12))
+        TrajectorySequence BabyParkLeft = drive.trajectorySequenceBuilder(LeftTo1.end())
+//                .lineTo(new Vector2d(45,-29))
+                .lineTo(new Vector2d(45,-35.5))
                 .build();
-        TrajectorySequence FuckOffToMiddle = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(-36, -12, Math.toRadians(90)))
-                .lineToConstantHeading(new Vector2d(-12, -12))
+        TrajectorySequence BabyParkMiddle = drive.trajectorySequenceBuilder(MiddleTo2.end())
+                .lineTo(new Vector2d(45,-35.5))
+                .build();
+        TrajectorySequence BabyParkRight = drive.trajectorySequenceBuilder(RightTo3.end())
+//                .lineTo(new Vector2d(45,-41))
+                .lineTo(new Vector2d(45,-35.5))
+                .build();
+        TrajectorySequence FuckOffToRight = drive.trajectorySequenceBuilder(new Pose2d(45,-35.5,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(45,-60,Math.toRadians(90)))
+                .build();
+        TrajectorySequence FuckOffToLeft = drive.trajectorySequenceBuilder(new Pose2d(45,-35.5,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(45,-12,Math.toRadians(90)))
+                .build();
+        TrajectorySequence FuckOffToMiddle = drive.trajectorySequenceBuilder(new Pose2d(45,-35.5,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(45,-35,Math.toRadians(90)))
                 .build();
 
 
         ElapsedTime WaitTimer = new ElapsedTime();
 
         while (!isStarted() && !isStopRequested()) {
+
+            previousGamepad1.copy(currentGamepad1);
+            previousGamepad2.copy(currentGamepad2);
+            currentGamepad1.copy(gamepad1);
+            currentGamepad2.copy(gamepad2);
+
             myPipeline.configureBorders(borderLeftX, borderRightX, borderTopY, borderBottomY);
             if (myPipeline.error) {
                 telemetry.addData("Exception: ", myPipeline.debug);
@@ -184,7 +210,7 @@ public class RedRight extends LinearOpMode {
             telemetry.addData("RectArea: ", myPipeline.getRectArea());
             telemetry.addData("MidPointX: ", myPipeline.getRectMidpointX());
 
-            if (myPipeline.getRectArea() > 2000) {
+            if(myPipeline.getRectArea() > 2000) {
                 if (myPipeline.getRectMidpointX() > 400) {
                     RIGHT = true;
                     LEFT = false;
@@ -205,6 +231,7 @@ public class RedRight extends LinearOpMode {
                 }
             }
 
+
             waitstick = -(gamepad1.right_stick_y / 50000);
             if (PushWait) {
                 telemetry.addLine("Changing Wait Before Push");
@@ -223,15 +250,18 @@ public class RedRight extends LinearOpMode {
             telemetry.addData("b: Wait Before Score", "%.2f", WaitBeforeScore);
             telemetry.addData("y: Wait Before Park", "%.2f", WaitBeforePark);
             telemetry.addLine();
-            if (ParkCorner) {
-                telemetry.addLine("Park in the Corner:}");
+            if (ParkLeft) {
+                telemetry.addLine("Park Left:}");
             }
             if (ParkMiddle) {
-                telemetry.addLine("Park in the Middle:}");
+                telemetry.addLine("Park Middle:}");
+            }
+            if (ParkRight) {
+                telemetry.addLine("Park Right:}");
             }
             telemetry.addLine();
-            telemetry.addLine("Right Trigger = Park in Corner");
-            telemetry.addLine("Left Trigger = Park in Middle");
+            telemetry.addLine("Right Trigger = Park More Right");
+            telemetry.addLine("Left Trigger = Park More Left");
             if (gamepad1.a) {
                 PushWait = true;
                 ScoreWait = false;
@@ -247,13 +277,29 @@ public class RedRight extends LinearOpMode {
                 ScoreWait = false;
                 ParkWait = true;
             }
-            if (gamepad1.right_trigger > 0.02) {
-                ParkCorner = true;
-                ParkMiddle = false;
+            if (currentGamepad1.right_bumper && !previousGamepad1.right_bumper) {
+                if (ParkMiddle) {
+                    ParkRight = true;
+                    ParkMiddle = false;
+                    ParkLeft = false;
+                }
+                if (ParkLeft) {
+                    ParkRight = false;
+                    ParkMiddle = true;
+                    ParkLeft = false;
+                }
             }
-            if (gamepad1.left_trigger > 0.02) {
-                ParkCorner = false;
-                ParkMiddle = true;
+            if (currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
+                if (ParkMiddle) {
+                    ParkRight = false;
+                    ParkMiddle = false;
+                    ParkLeft = true;
+                }
+                if (ParkRight) {
+                    ParkRight = false;
+                    ParkMiddle = true;
+                    ParkLeft = false;
+                }
             }
             linksklauw.setPosition(GlobalValues.linkspickup);
             rechtsklauw.setPosition(GlobalValues.rechtspickup);
@@ -261,6 +307,11 @@ public class RedRight extends LinearOpMode {
 
             telemetry.update();
             while (opModeIsActive()) {
+                if (slides.isBusy()){
+                    slides.setPower(0.5);
+                } else {
+                    slides.setPower(0);
+                }
                 switch (currentstate) {
                     case idol:
                         if (!drive.isBusy()) {
@@ -277,28 +328,47 @@ public class RedRight extends LinearOpMode {
 
                     case ToPush:
                         if (WaitTimer.seconds() >= WaitBeforePush) {
-                            if (LEFT) {
+                            if (LEFT){
                                 drive.followTrajectorySequenceAsync(StartToLeft);
-                            } else if (MIDDLE) {
+                            } else if (MIDDLE){
                                 drive.followTrajectorySequenceAsync(StartToMiddle);
-                            } else if (RIGHT) {
+                            } else if (RIGHT){
                                 drive.followTrajectorySequenceAsync(StartToRight);
-                            } else {
+                            }else {
                                 drive.followTrajectorySequenceAsync(StartToMiddle);
                             }
-
+                            currentstate = TradWifeState.WaitBeforeScore;
                         }
                         break;
 
                     case WaitBeforeScore:
                         if (!drive.isBusy()) {
-                            TOUP = true;
                             WaitTimer.reset();
+                            linksklauw.setPosition(GlobalValues.linksdrop);
+                            slides.setTargetPosition(50);
+                            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            currentstate = TradWifeState.ToBabyScore;
+                        }
+                        break;
+                    case ToBabyScore:
+                        if (WaitTimer.seconds() >= WaitBeforeScore) {
+                            if (LEFT) {
+                                drive.followTrajectorySequenceAsync(LeftToBaby);
+                            } else if (MIDDLE) {
+                                drive.followTrajectorySequenceAsync(MiddleToBaby);
+                            } else if (RIGHT) {
+                                drive.followTrajectorySequenceAsync(RightToBaby);
+                            } else {
+                                drive.followTrajectorySequenceAsync(MiddleToBaby);
+                            }
+                            slides.setTargetPosition(275);
+                            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            currentstate = TradWifeState.ToScore;
                         }
                         break;
 
                     case ToScore:
-                        if (WaitTimer.seconds() >= WaitBeforeScore && slides.getCurrentPosition() > 15) {
+                        if (!drive.isBusy() && slides.getCurrentPosition() > 250) {
                             if (LEFT) {
                                 drive.followTrajectorySequenceAsync(LeftTo1);
                             } else if (MIDDLE) {
@@ -308,56 +378,63 @@ public class RedRight extends LinearOpMode {
                             } else {
                                 drive.followTrajectorySequenceAsync(MiddleTo2);
                             }
+                            slides.setTargetPosition(550);
+                            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             twist.setPosition(GlobalValues.twistdrop);
                             currentstate = TradWifeState.WaitBeforePark;
                         }
                         break;
 
+
                     case WaitBeforePark:
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
+                            linksklauw.setPosition(GlobalValues.linksdrop);
+                            currentstate = TradWifeState.ToBabyPark;
+                            rechtsklauw.setPosition(GlobalValues.rechtsdrop);
+                        }
+                        break;
+                    case ToBabyPark:
+                        if(WaitTimer.seconds() >= WaitBeforePark) {
+                            if (LEFT) {
+                                drive.followTrajectorySequenceAsync(BabyParkLeft);
+                            } else if (MIDDLE) {
+                                drive.followTrajectorySequenceAsync(BabyParkMiddle);
+                            } else if (RIGHT) {
+                                drive.followTrajectorySequenceAsync(BabyParkRight);
+                            } else {
+                                drive.followTrajectorySequenceAsync(BabyParkMiddle);
+                            }
                             currentstate = TradWifeState.ToPark;
+
                         }
                         break;
 
                     case ToPark:
-                        if (WaitTimer.seconds() >= WaitBeforePark) {
+                        if(!drive.isBusy()) {
+                            twist.setPosition(GlobalValues.twistpickup);
                             currentstate = TradWifeState.FinishedSLAY;
-                            if (ParkCorner) {
-                                drive.followTrajectorySequenceAsync(FuckOffToCorner);
-                            } else if (ParkMiddle) {
-                                drive.followTrajectorySequenceAsync(FuckOffToCorner);
+                            if (ParkLeft){
+                                drive.followTrajectorySequenceAsync(FuckOffToLeft);
+                            } else if (ParkMiddle){
+                                drive.followTrajectorySequenceAsync(FuckOffToMiddle);
+                            } else if (ParkRight){
+                                drive.followTrajectorySequenceAsync(FuckOffToRight);
                             } else {
                                 drive.followTrajectorySequenceAsync(FuckOffToMiddle);
                             }
+                            WaitTimer.reset();
                         }
                         break;
 
                     case FinishedSLAY:
-                        break;
-                }
-                switch (slideystate) {
-                    case GROUND:
-                        if (TOUP) {
-                            slideystate = Slideys.OPEN;
-                        }
-                        break;
-
-                    case OPEN:
-                        linksklauw.setPosition(GlobalValues.linksdrop);
-                        slideystate = Slideys.UP;
-
-                    case UP:
-                        if (linksklauw.getPosition() == GlobalValues.linksdrop) {
-                            slides.setTargetPosition(100);
+                        if (WaitTimer.seconds()>= chill) {
+                            slides.setTargetPosition(0);
                             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                            TOUP = false;
-                            slideystate = Slideys.GROUND;
                         }
                         break;
+
                 }
-
-
                 // We update drive continuously in the background, regardless of state
                 drive.update();
                 // We update our lift PID continuously in the background, regardless of state

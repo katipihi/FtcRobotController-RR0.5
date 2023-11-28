@@ -154,22 +154,22 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                             rechtsklauw.setPosition(rechtspickup);
                         }
                         if (gamepad2.left_bumper){
-                            rechtsklauw.setPosition(linksdrop);
+                            linksklauw.setPosition(linksdrop);
                         }
                         if (gamepad2.right_bumper){
-                            linksklauw.setPosition(rechtsdrop);
+                            rechtsklauw.setPosition(rechtsdrop);
                         }
 
                     }
                     if (twist.getPosition()<0.5){
                         if (gamepad2.left_trigger>0.02){
-                            linksklauw.setPosition(rechtspickup);
+                            rechtsklauw.setPosition(rechtspickup);
                         }
                         if (gamepad2.right_trigger>0.02){
-                            rechtsklauw.setPosition(linkspickup);
+                            linksklauw.setPosition(linkspickup);
                         }
                         if (gamepad2.left_bumper){
-                            rechtsklauw.setPosition(rechtsdrop);
+                            rechtsklauw .setPosition(rechtsdrop);
                         }
                         if (gamepad2.right_bumper){
                             linksklauw.setPosition(linksdrop);
