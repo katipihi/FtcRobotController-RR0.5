@@ -52,6 +52,14 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
         Hangplane
     }
     controls controlstate = controls.Normal;
+
+    public enum rumble {
+        left,
+        right,
+        nothing
+    }
+    rumble rumblestate = rumble.nothing;
+
     private DcMotor leftRear;
     
     private DcMotor rightRear;
@@ -64,6 +72,11 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
     private Servo lefthang;
     private Servo righthang;
+    public boolean lefttwisted;
+    public boolean righttwisted;
+    public boolean leftrumbled = false;
+    public boolean rightrumbled = false;
+
 
 
     BNO055IMU imu;
@@ -274,7 +287,47 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
             } else if (slides.isBusy() == false && slidespower == 0) {
                 slides.setPower(0);
             }
+            if(linksklauw.getPosition()>0.5){
+                lefttwisted = true;
+            } else {
+                lefttwisted = false;
+                leftrumbled = false;
+            }
+            if(rechtsklauw.getPosition()<0.6){
+                righttwisted = true;
+            } else {
+                righttwisted = false;
+                rightrumbled = false;
+            }
 
+            if(lefttwisted){
+                gamepad1.rumble(0.75,0,250);
+            } if(rechtsklauw.getPosition()<0.6){
+                gamepad1.rumble(0,0.75,250);
+            }
+            switch (rumblestate){
+                case nothing:
+                    if (lefttwisted && !leftrumbled){
+                        rumblestate = rumble.left;
+                    } if(righttwisted && !rightrumbled){
+                        rumblestate = rumble.right;
+                    }
+                    break;
+                case left:
+                    if (Math.abs(slides.getCurrentPosition()- 400)<30){
+                        gamepad1.rumble(0.75,0,250);
+                        rumblestate = rumble.nothing;
+                        leftrumbled = true;
+                    }
+                    break;
+                case right:
+                    if (Math.abs(slides.getCurrentPosition()- 400)<30){
+                        gamepad1.rumble(0,0.75,250);
+                        rumblestate = rumble.nothing;
+                        rightrumbled = true;
+                    }
+
+            }
 
             if (Math.abs(gamepad1.right_trigger) < 0.02) {
                    turnfactor = 0.9;

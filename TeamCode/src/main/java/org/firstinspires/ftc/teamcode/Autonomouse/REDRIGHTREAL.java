@@ -172,7 +172,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(49, -43, Math.toRadians(0)))
                 .build();
         TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(LeftToBaby.end())
-                .lineToLinearHeading(new Pose2d(50, -29, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(49, -29, Math.toRadians(0)))
                 .build();
         TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(MiddleToBaby.end())
                 .splineToLinearHeading(new Pose2d(50, -35.5, Math.toRadians(0)), Math.toRadians(0))
