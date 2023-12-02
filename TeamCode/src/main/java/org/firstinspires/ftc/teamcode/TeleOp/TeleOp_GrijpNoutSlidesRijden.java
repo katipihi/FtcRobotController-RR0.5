@@ -30,13 +30,13 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
     public static double leftlow = 0;
     public static double lefthigh = 0.85;
-    public static double leftmid = 0.5;
+    public static double leftmid = 0.51;
     public static double leftbabymid = 0.4;
 
-    public static double rightmid = 0.5;
-    public static double rightbabymid = 0.6;
 
-    public static double rightlow = 0.85;
+    public static double rightmid = 0.52;
+    public static double rightbabymid = 0.6;
+    public static double rightlow = 1;
     public static double righthigh = 0.18;
 
 
@@ -49,7 +49,8 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
     public enum controls {
         Normal,
-        Hangplane
+        Hangplane,
+        Hangensmooth
     }
     controls controlstate = controls.Normal;
 
@@ -128,8 +129,8 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        lefthang.setPosition(0.6);
-        righthang.setPosition(0.4);
+        lefthang.setPosition(leftmid);
+        righthang.setPosition(rightmid);
 
         waitForStart();
 
@@ -154,7 +155,7 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                         twist.setPosition(twistdrop);
                         slideystate = Slideys.GROUND;
                     }
-
+                break;
             }
             switch (controlstate){
                 case Normal:
@@ -209,11 +210,30 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
                     if (gamepad2.options&&gamepad2.share){
-                        controlstate = controls.Hangplane;
+                        controlstate = controls.Hangensmooth;
                         gamepad2.rumbleBlips(3);
                     }
                     telemetry.addLine("NORMAALSLET");
-                    break;
+                break;
+                case Hangensmooth:
+                    gamepad2.setLedColor(1,0,0.91, Gamepad.LED_DURATION_CONTINUOUS);
+                    if (gamepad2.right_trigger>0.02){
+                        lefthang.setPosition(leftlow);
+                        righthang.setPosition(rightlow);
+                    } if (gamepad2.left_trigger>0.02) {
+                    lefthang.setPosition(lefthigh);
+                    righthang.setPosition(righthigh);}
+                    if (gamepad2.a){
+                        lefthang.setPosition(leftmid);
+                        righthang.setPosition(rightmid);
+                    }
+                    if(gamepad2.touchpad){
+                        controlstate = controls.Normal;
+                    }
+                    if(gamepad2.dpad_up){
+                        controlstate = controls.Hangplane;
+                    }
+                    telemetry.addLine("HANGENBITCH");
                 case Hangplane:
                     gamepad2.setLedColor(1,0,0.91, Gamepad.LED_DURATION_CONTINUOUS);
                     if (gamepad2.dpad_down){
@@ -236,7 +256,10 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
                     if(gamepad2.options){
                         controlstate = controls.Normal;
-                    }                     telemetry.addLine("HANGENBITCH");
+                    }if(gamepad2.share){
+                        controlstate = controls.Hangensmooth;
+                    }
+                    telemetry.addLine("Hangenalles");
 
 
             }

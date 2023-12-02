@@ -50,13 +50,13 @@ public class BLUELEFTREAL extends LinearOpMode {
     //public static Scalar scalarUpperYCrCb = new Scalar(255.0, 255.0, 255.0);
 
     // Red                                              Y      Cr     Cb    (Do not change Y)
-    public static Scalar scalarLowerYCrCb = new Scalar(0.0, 160.0, 0.0);
-    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 255.0, 120.0);
+//    public static Scalar scalarLowerYCrCb = new Scalar(0.0, 160.0, 0.0);
+//    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 255.0, 120.0);
 
 
-    // Blue                                              Y      Cr     Cb    (Do not change Y)
-//    public Scalar scalarLowerYCrCb = new Scalar(0.0, 0.0, 150.0);
-//    public Scalar scalarUpperYCrCb = new Scalar(255.0, 140.0, 255.0);
+//     Blue                                              Y      Cr     Cb    (Do not change Y)
+    public Scalar scalarLowerYCrCb = new Scalar(0.0, 0.0, 150.0);
+    public Scalar scalarUpperYCrCb = new Scalar(255.0, 140.0, 255.0);
 
     // Yellow Range
 //    public static Scalar scalarLowerYCrCb = new Scalar(0.0, 100.0, 0.0);
