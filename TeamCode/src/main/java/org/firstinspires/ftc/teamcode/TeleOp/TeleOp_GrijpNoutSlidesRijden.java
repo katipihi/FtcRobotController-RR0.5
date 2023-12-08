@@ -253,7 +253,6 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
                     } if (gamepad2.cross){
                         righthang.setPosition(rightlow);
                     }
-
                     if(gamepad2.options){
                         controlstate = controls.Normal;
                     }if(gamepad2.share){

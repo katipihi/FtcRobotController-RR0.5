@@ -8,15 +8,20 @@ public class ConfigurationName {
     public static String rightFront = "rvm";
     public static String rightRear = "ram";
 
-    // Crane
+    // Slides
     public static String slides = "sli";
 
-    // Servo
+    // Klauw
     public static String twist = "dra";
     public static String rechtsklauw = "rkl";
     public static String linksklauw = "lkl";
+
+    // Hangen
     public static String lefthang = "lhg";
     public static String righthang = "rhg";
 
+    // KlauwSensoren
+    public static String linkssensor = "lss";
+    public static String rechtssensor = "rss";
 
 }
