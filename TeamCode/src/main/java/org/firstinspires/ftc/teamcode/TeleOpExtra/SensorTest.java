@@ -4,10 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
+import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
 
 /*
  * This OpMode illustrates using the rumble feature of many gamepads.
@@ -92,26 +96,51 @@ import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
 @TeleOp(name="Sensortest", group ="Concept")
 public class SensorTest extends LinearOpMode
 {
-private ColorSensor linkssensor;
-    private ColorSensor rechtssensor;
+    ColorSensor rechtssensor;
+    private DistanceSensor linkssensor;
+
+    private Servo rechtsklauw;
+    private Servo linksklauw;
+
+    private boolean sensor = false;
+
 
     @Override
     public void runOpMode()
     {
-        linkssensor = hardwareMap.colorSensor.get(ConfigurationName.linkssensor);
         rechtssensor = hardwareMap.colorSensor.get(ConfigurationName.rechtssensor);
+        linkssensor = hardwareMap.get(DistanceSensor.class, ConfigurationName.linkssensor);
+
+        rechtsklauw = hardwareMap.servo.get(ConfigurationName.rechtsklauw);
+        linksklauw = hardwareMap.servo.get(ConfigurationName.linksklauw);
+
+        waitForStart();
 
         // Loop while monitoring buttons for rumble triggers
         while (opModeIsActive())
-        {
-            public int getLeft(){
-
+        { if (gamepad1.a){
+            sensor = true;
+        } else {
+            sensor = false;
         }
-
-
-            // Send the telemetry data to the Driver Station, and then pause to pace the program.
+        if (gamepad1.b){
+            rechtsklauw.setPosition(0.14);
+            linksklauw.setPosition(0.88);
+        }
+        if (sensor) {
+            if (rechtssensor.green() > 400) {
+                rechtsklauw.setPosition(0.45);
+            }
+            if (linkssensor.getDistance(DistanceUnit.MM)<70) {
+                linksklauw.setPosition(0.62);
+            }
+        }
+            telemetry.addData("Red", rechtssensor.red());
+            telemetry.addData("Green", rechtssensor.green());
+            telemetry.addData("Blue", rechtssensor.blue());
+            telemetry.addData("Distance", linkssensor.getDistance(DistanceUnit.MM));
             telemetry.update();
-            sleep(10);
         }
+
     }
 }
