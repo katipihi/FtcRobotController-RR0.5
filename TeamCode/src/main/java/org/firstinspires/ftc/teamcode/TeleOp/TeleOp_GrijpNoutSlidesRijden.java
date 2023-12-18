@@ -8,8 +8,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 //@Disabled
 @Config
@@ -42,8 +48,11 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
     public enum Slideys {
         GROUND,
-        TWIST,
-        Up
+        TWISTDROP,
+        Up,
+        Down,
+        TWISTPICKUP,
+        TWISTEXTRA
     }
     Slideys slideystate = Slideys.GROUND;
 
@@ -53,13 +62,6 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
         Hangensmooth
     }
     controls controlstate = controls.Normal;
-
-    public enum rumble {
-        left,
-        right,
-        nothing
-    }
-    rumble rumblestate = rumble.nothing;
 
     private DcMotor leftRear;
     
@@ -75,10 +77,9 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
     private Servo righthang;
     public boolean lefttwisted;
     public boolean righttwisted;
-    public boolean leftrumbled = false;
     public boolean rightrumbled = false;
-
-
+    public boolean leftrumbled = false;
+    double TwistWait = 1.0;
 
     BNO055IMU imu;
 
@@ -132,6 +133,8 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
         lefthang.setPosition(leftmid);
         righthang.setPosition(rightmid);
 
+        ElapsedTime WaitTimer = new ElapsedTime();
+
         waitForStart();
 
 
@@ -142,126 +145,171 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 //                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //                twist.setPosition(twistdrop);
 //            }
-            switch (slideystate){
+            switch (slideystate) {
                 case GROUND:
-                    if (gamepad2.triangle && controlstate.equals(controls.Normal)){
-                    slides.setTargetPosition(400);
-                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    slideystate = Slideys.TWIST;
+                    if (gamepad2.triangle && controlstate.equals(controls.Normal)) {
+                        slides.setTargetPosition(400);
+                        slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        slideystate = Slideys.TWISTDROP;
                     }
-                break;
-                case TWIST:
-                    if (Math.abs(slides.getCurrentPosition()- 400)<30){
+                    if (gamepad2.square && controlstate.equals(controls.Normal)) {
+                        if (twist.getPosition() == twistpickup) {
+                            slides.setTargetPosition(0);
+                            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideystate = Slideys.GROUND;
+
+                        } else if (Math.abs(slides.getCurrentPosition()) > 250) {
+                            twist.setPosition(twistpickup);
+                            WaitTimer.reset();
+                            slideystate = Slideys.TWISTPICKUP;
+                        } else {
+                            slides.setTargetPosition(300);
+                            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideystate = Slideys.TWISTEXTRA;
+                        }
+                    }
+                    break;
+                case TWISTDROP:
+                    if (Math.abs(slides.getCurrentPosition() - 400) < 30) {
                         twist.setPosition(twistdrop);
                         slideystate = Slideys.GROUND;
                     }
-                break;
+                    break;
+                case TWISTPICKUP:
+                    if (WaitTimer.seconds() >= TwistWait) {
+                        slides.setTargetPosition(0);
+                        slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        slideystate = Slideys.GROUND;
+                    }
+                    break;
+                case TWISTEXTRA:
+                    if (Math.abs(slides.getCurrentPosition()) > 250) {
+                        twist.setPosition(twistpickup);
+                        WaitTimer.reset();
+                        slideystate = Slideys.TWISTPICKUP;
+                    }
+                    break;
             }
-            switch (controlstate){
+            switch (controlstate) {
                 case Normal:
-                    gamepad2.setLedColor(0,0,1, Gamepad.LED_DURATION_CONTINUOUS);
-                    if (twist.getPosition()>0.5){
-                        if (gamepad2.left_trigger>0.02){
+                    gamepad2.setLedColor(0, 0, 1, Gamepad.LED_DURATION_CONTINUOUS);
+                    if (twist.getPosition() > 0.5) {
+                        if (gamepad2.left_trigger > 0.02) {
                             linksklauw.setPosition(linkspickup);
                         }
-                        if (gamepad2.right_trigger>0.02){
+                        if (gamepad2.right_trigger > 0.02) {
                             rechtsklauw.setPosition(rechtspickup);
                         }
-                        if (gamepad2.left_bumper){
+                        if (gamepad2.left_bumper) {
                             linksklauw.setPosition(linksdrop);
                         }
-                        if (gamepad2.right_bumper){
+                        if (gamepad2.right_bumper) {
                             rechtsklauw.setPosition(rechtsdrop);
                         }
 
                     }
-                    if (twist.getPosition()<0.5){
-                        if (gamepad2.left_trigger>0.02){
+                    if (twist.getPosition() < 0.5) {
+                        if (gamepad2.left_trigger > 0.02) {
                             rechtsklauw.setPosition(rechtspickup);
                         }
-                        if (gamepad2.right_trigger>0.02){
+                        if (gamepad2.right_trigger > 0.02) {
                             linksklauw.setPosition(linkspickup);
                         }
-                        if (gamepad2.left_bumper){
-                            rechtsklauw .setPosition(rechtsdrop);
+                        if (gamepad2.left_bumper) {
+                            rechtsklauw.setPosition(rechtsdrop);
                         }
-                        if (gamepad2.right_bumper){
+                        if (gamepad2.right_bumper) {
                             linksklauw.setPosition(linksdrop);
                         }
 
                     }
 
-                    if (gamepad2.right_stick_button){
+                    if (gamepad2.right_stick_button) {
                         twist.setPosition(twistpickup);
                     }
-                    if (gamepad2.left_stick_button && slides.getCurrentPosition()>250){
+                    if (gamepad2.left_stick_button && slides.getCurrentPosition() > 250) {
                         twist.setPosition(twistdrop);
                     }
 
-                    if(gamepad2.cross){
+                    if (gamepad2.cross) {
                         linksklauw.setPosition(links1drop);
                         rechtsklauw.setPosition(rechts1drop);
+                    }
+                    if (gamepad2.dpad_up) {
+                        slides.setTargetPosition(slides.getCurrentPosition() + 15);
+                        slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     }
 
                     if (gamepad2.share && slideystate != Slideys.GROUND) {
                         slideystate = Slideys.GROUND;
                     }
-                    if (gamepad2.share){
+                    if (gamepad2.share) {
                         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
-                    if (gamepad2.options&&gamepad2.share){
+                    if (gamepad2.options && gamepad2.share) {
                         controlstate = controls.Hangensmooth;
                         gamepad2.rumbleBlips(3);
                     }
                     telemetry.addLine("NORMAALSLET");
-                break;
+                    break;
                 case Hangensmooth:
-                    gamepad2.setLedColor(1,0,0.91, Gamepad.LED_DURATION_CONTINUOUS);
-                    if (gamepad2.right_trigger>0.02){
+                    gamepad2.setLedColor(1, 0, 0.91, Gamepad.LED_DURATION_CONTINUOUS);
+                    if (gamepad2.right_trigger > 0.02) {
                         lefthang.setPosition(leftlow);
                         righthang.setPosition(rightlow);
-                    } if (gamepad2.left_trigger>0.02) {
-                    lefthang.setPosition(lefthigh);
-                    righthang.setPosition(righthigh);}
-                    if (gamepad2.a){
+                    }
+                    if (gamepad2.left_trigger > 0.02) {
+                        lefthang.setPosition(lefthigh);
+                        righthang.setPosition(righthigh);
+                    }
+                    if (gamepad2.a) {
                         lefthang.setPosition(leftmid);
                         righthang.setPosition(rightmid);
                     }
-                    if(gamepad2.touchpad){
+                    if (gamepad2.touchpad) {
                         controlstate = controls.Normal;
                     }
-                    if(gamepad2.dpad_up){
+                    if (gamepad2.dpad_up) {
                         controlstate = controls.Hangplane;
                     }
                     telemetry.addLine("HANGENBITCH");
                 case Hangplane:
-                    gamepad2.setLedColor(1,0,0.91, Gamepad.LED_DURATION_CONTINUOUS);
-                    if (gamepad2.dpad_down){
+                    gamepad2.setLedColor(1, 0, 0.91, Gamepad.LED_DURATION_CONTINUOUS);
+                    if (gamepad2.dpad_down) {
                         lefthang.setPosition(leftlow);
-                    } if (gamepad2.dpad_left) {
+                    }
+                    if (gamepad2.dpad_left) {
                         lefthang.setPosition(leftmid);
-                    } if (gamepad2.dpad_right) {
+                    }
+                    if (gamepad2.dpad_right) {
                         lefthang.setPosition(leftbabymid);
-                    } if (gamepad2.dpad_up){
+                    }
+                    if (gamepad2.dpad_up) {
                         lefthang.setPosition(lefthigh);
-                    } if (gamepad2.triangle){
+                    }
+                    if (gamepad2.triangle) {
                         righthang.setPosition(righthigh);
-                    } if (gamepad2.circle){
+                    }
+                    if (gamepad2.circle) {
                         righthang.setPosition(rightmid);
-                    } if (gamepad2.square) {
+                    }
+                    if (gamepad2.square) {
                         righthang.setPosition(rightbabymid);
-                    } if (gamepad2.cross){
+                    }
+                    if (gamepad2.cross) {
                         righthang.setPosition(rightlow);
                     }
-                    if(gamepad2.options){
+                    if (gamepad2.options) {
                         controlstate = controls.Normal;
-                    }if(gamepad2.share){
+                    }
+                    if (gamepad2.share) {
                         controlstate = controls.Hangensmooth;
                     }
                     telemetry.addLine("Hangenalles");
 
 
             }
+
 
 //            if (gamepad2.right_bumper && gamepad2.left_bumper){
 //                gamepad2.setLedColor(1,0,0.91, Gamepad.LED_DURATION_CONTINUOUS);
@@ -282,18 +330,14 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 //                }
 //            }
 
-            telemetry.addData("Links: ",linksklauw.getPosition());
-            telemetry.addData("Rechts: ",rechtsklauw.getPosition());
-            telemetry.addData("Pols: ",twist.getPosition());
-            telemetry.addData("Slides: ",slides.getCurrentPosition());
-            telemetry.addData("SlidesTarget: ",slides.getTargetPosition());
+            telemetry.addData("Links: ", linksklauw.getPosition());
+            telemetry.addData("Rechts: ", rechtsklauw.getPosition());
+            telemetry.addData("Pols: ", twist.getPosition());
+            telemetry.addData("Slides: ", slides.getCurrentPosition());
+            telemetry.addData("SlidesTarget: ", slides.getTargetPosition());
 
 
 
-            if(gamepad2.left_bumper){
-                slides.setTargetPosition(slides.getCurrentPosition()+15);
-                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
             double cl = -gamepad2.left_stick_y; // Remember, this is reversed!
             double cr = -gamepad2.right_stick_y; // Counteract imperfect strafing
 
@@ -309,52 +353,46 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
             } else if (slides.isBusy() == false && slidespower == 0) {
                 slides.setPower(0);
             }
-            if(linksklauw.getPosition()<0.7){
-                lefttwisted = true;
-            } else {
-                lefttwisted = false;
-                leftrumbled = false;
-            }
-            if(rechtsklauw.getPosition()>0.3){
+            if (rechtsklauw.getPosition() > 0.4) {
                 righttwisted = true;
             } else {
                 righttwisted = false;
-                rightrumbled = false;
+            }
+            if (righttwisted && !rightrumbled) {
+//                gamepad1.rumble(0.0,1.0,200);
+                gamepad1.rumble(0.0, 1.0, 200);
+                gamepad2.rumble(0.0, 1.0, 200);
+//                gamepad1.rumbleBlips(3);
             }
 
-            switch (rumblestate){
-                case nothing:
-                    if (lefttwisted && !leftrumbled){
-                        rumblestate = rumble.left;
-                    } if(righttwisted && !rightrumbled){
-                        rumblestate = rumble.right;
-                    }
-                    break;
-                case left:
-                        gamepad1.rumble(0.75,0,250);
-                        rumblestate = rumble.nothing;
-                        leftrumbled = true;
-                    break;
-                case right:
-                        gamepad1.rumble(0,0.75,250);
-                        rumblestate = rumble.nothing;
-                        rightrumbled = true;
-                    break;
+
+
+            if (linksklauw.getPosition() < 0.7) {
+                lefttwisted = true;
+            } else {
+                lefttwisted = false;
             }
+            if (lefttwisted && !leftrumbled) {
+                gamepad1.rumble(1.0, 0.0, 250);
+                gamepad2.rumble(1.0, 0.0, 250);
+
+            }
+
+
 
             if (Math.abs(gamepad1.right_trigger) < 0.02) {
-                   turnfactor = 0.9;
-                   maxspeed = 1.2;
+                turnfactor = 0.9;
+                maxspeed = 1.2;
 
-               } else if (Math.abs(gamepad1.right_trigger) > 0.02) {
-                   turnfactor = (-0.3*gamepad1.right_trigger)+0.9;
-                   maxspeed = (-0.9*gamepad1.right_trigger)+1.2;
+            } else if (Math.abs(gamepad1.right_trigger) > 0.02) {
+                turnfactor = (-0.3 * gamepad1.right_trigger) + 0.9;
+                maxspeed = (-0.9 * gamepad1.right_trigger) + 1.2;
 
-               }else if (Math.abs(gamepad1.left_trigger) > 0.02) {
-                   turnfactor = (0.3*gamepad1.left_trigger)+0.9;
-                   maxspeed = (0.4*gamepad1.left_trigger)+1.2;
+            } else if (Math.abs(gamepad1.left_trigger) > 0.02) {
+                turnfactor = (0.3 * gamepad1.left_trigger) + 0.9;
+                maxspeed = (0.4 * gamepad1.left_trigger) + 1.2;
 
-               }
+            }
 
             if (gamepad1.a) {
                 turnfactor = 0.9;
@@ -367,34 +405,38 @@ public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
 
             }
 
-               double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-               double x = gamepad1.left_stick_x; // Counteract imperfect strafing
-               double rx = gamepad1.right_stick_x;
+            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+            double x = gamepad1.left_stick_x; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x;
 
-               double botHeading = -imu.getAngularOrientation().firstAngle;
+            double botHeading = -imu.getAngularOrientation().firstAngle;
 
-               if (gamepad1.options){
-                   imu.initialize(parameters);
-               }
-
-               double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
-               double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
-
-               double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-               double frontLeftPower = ((rotY + rotX + (rx * turnfactor)) / denominator) * maxspeed;
-               double backLeftPower = ((rotY - rotX + (rx * turnfactor)) / denominator) * maxspeed;
-               double frontRightPower = ((rotY - rotX - (rx * turnfactor)) / denominator) * maxspeed;
-               double backRightPower = ((rotY + rotX - (rx * turnfactor)) / denominator) * maxspeed;
-
-               leftFront.setPower(frontLeftPower);
-               leftRear.setPower(backLeftPower);
-               rightFront.setPower(frontRightPower);
-               rightRear.setPower(backRightPower);
-
-               telemetry.update();
+            if (gamepad1.options) {
+                imu.initialize(parameters);
             }
 
+            double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+            double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = ((rotY + rotX + (rx * turnfactor)) / denominator) * maxspeed;
+            double backLeftPower = ((rotY - rotX + (rx * turnfactor)) / denominator) * maxspeed;
+            double frontRightPower = ((rotY - rotX - (rx * turnfactor)) / denominator) * maxspeed;
+            double backRightPower = ((rotY + rotX - (rx * turnfactor)) / denominator) * maxspeed;
+
+            leftFront.setPower(frontLeftPower);
+            leftRear.setPower(backLeftPower);
+            rightFront.setPower(frontRightPower);
+            rightRear.setPower(backRightPower);
+
+            rightrumbled = righttwisted;
+            leftrumbled = lefttwisted;
+
+            telemetry.update();
         }
 
     }
+}
+
+
 

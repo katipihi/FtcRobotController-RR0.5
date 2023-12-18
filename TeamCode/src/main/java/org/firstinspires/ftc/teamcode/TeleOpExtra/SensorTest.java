@@ -103,11 +103,32 @@ public class SensorTest extends LinearOpMode
     private Servo linksklauw;
 
     private boolean sensor = false;
-
-
+    public boolean lefttwisted;
+    public boolean righttwisted;
+    public boolean leftrumbled = false;
+    public boolean rightrumbled = false;
+    Gamepad.RumbleEffect linksnothing;
+    Gamepad.RumbleEffect rechtsnothing;
     @Override
     public void runOpMode()
+
     {
+        linksnothing = new Gamepad.RumbleEffect.Builder()
+                .addStep(1.0, 0.0, 100)
+                .addStep(0.0, 0.0, 100)
+                .addStep(1.0, 0.0, 100)
+                .addStep(0.0, 0.0, 100)
+                .addStep(1.0, 0.0, 100)
+                .build();
+
+        rechtsnothing = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.0, 1.0, 100)
+                .addStep(0.0, 0.0, 100)
+                .addStep(0.0, 1.0, 100)
+                .addStep(0.0, 0.0, 100)
+                .addStep(0.0, 1.0, 100)
+                .build();
+
         rechtssensor = hardwareMap.colorSensor.get(ConfigurationName.rechtssensor);
         linkssensor = hardwareMap.get(DistanceSensor.class, ConfigurationName.linkssensor);
 
@@ -135,10 +156,43 @@ public class SensorTest extends LinearOpMode
                 linksklauw.setPosition(0.62);
             }
         }
+            if(linksklauw.getPosition()<0.7){
+                lefttwisted = true;
+            } else {
+                lefttwisted = false;
+            }
+            if (lefttwisted && !leftrumbled && linkssensor.getDistance(DistanceUnit.MM)<70){
+                gamepad1.rumble(0.75,0,250);
+            } else if (lefttwisted && !leftrumbled){
+                gamepad1.runRumbleEffect(linksnothing);
+            }
+            leftrumbled = lefttwisted;
+
+            if(rechtsklauw.getPosition()>0.4){
+                telemetry.addLine("rechtstwisted");
+                righttwisted = true;
+            } else {
+                righttwisted = false;
+            }
+            if (righttwisted && !rightrumbled && rechtssensor.green()>400)
+            {   telemetry.addLine("rechtsrumble");
+                gamepad1.rumble(0,0.75,250);
+            } else if (righttwisted && !rightrumbled){
+                gamepad1.runRumbleEffect(rechtsnothing);
+            }
+            if (rightrumbled){
+                telemetry.addLine("rumblefalse");
+            } else {
+                telemetry.addLine("rumbletrue");
+
+            }
+
+            rightrumbled = righttwisted;
             telemetry.addData("Red", rechtssensor.red());
             telemetry.addData("Green", rechtssensor.green());
             telemetry.addData("Blue", rechtssensor.blue());
             telemetry.addData("Distance", linkssensor.getDistance(DistanceUnit.MM));
+
             telemetry.update();
         }
 
