@@ -66,6 +66,10 @@ public class REDRIGHTREAL extends LinearOpMode {
     boolean LEFT = false;
     boolean MIDDLE = false;
     boolean RIGHT = false;
+    boolean AndTwo = false;
+    boolean JustPark = false;
+
+
 
     boolean PushWait = true;
     boolean ScoreWait = false;
@@ -80,6 +84,7 @@ public class REDRIGHTREAL extends LinearOpMode {
     double waitstick;
     double WaitBeforePush = 1.5;
     double WaitBeforeScore = 1.5;
+    double WaitBeforeIntake = 1.5;
     double WaitBeforePark = 1.5;
     double Chill = 1.5;
 
@@ -92,6 +97,9 @@ public class REDRIGHTREAL extends LinearOpMode {
         ToBabyScore,
         ToScore,
         WaitBeforePark,
+        WaitBeforeIntake,
+        ToIntake,
+        ToScorePt2,
         ToBabyPark,
         ToPark,
         FinishedSLAY,
@@ -177,6 +185,22 @@ public class REDRIGHTREAL extends LinearOpMode {
         TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(MiddleToBaby.end())
                 .splineToLinearHeading(new Pose2d(50, -35.5, Math.toRadians(0)), Math.toRadians(0))
                 .build();
+        TrajectorySequence LeftToIntake = drive.trajectorySequenceBuilder(LeftTo1.end())
+                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
+                .lineToLinearHeading(new Pose2d(-50,-11,Math.toRadians(180)))
+                .build();
+        TrajectorySequence MiddleToIntake = drive.trajectorySequenceBuilder(MiddleTo2.end())
+                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
+                .lineToLinearHeading(new Pose2d(-50,-11,Math.toRadians(180)))
+                .build();
+        TrajectorySequence RightToIntake = drive.trajectorySequenceBuilder(RightTo3.end())
+                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
+                .lineToLinearHeading(new Pose2d(-50,-11,Math.toRadians(180)))
+                .build();
+
         TrajectorySequence BabyParkLeft = drive.trajectorySequenceBuilder(LeftTo1.end())
 //                .lineTo(new Vector2d(45,-29))
                 .lineToConstantHeading(new Vector2d(41,-35.5))
@@ -243,8 +267,21 @@ public class REDRIGHTREAL extends LinearOpMode {
                     telemetry.addLine("LINKSBITCH");
                 }
             }
-
-
+            if (AndTwo) {
+                telemetry.addLine("2 + 2 -- Share Voor Alleen 2");
+                if (gamepad1.share){
+                    JustPark = true;
+                    AndTwo = false;
+                }
+            }
+            if (JustPark) {
+                telemetry.addLine("Alleen 2 -- Options Voor 2 + 2");
+                WaitBeforePush += waitstick;
+                if (gamepad1.options){
+                    JustPark = false;
+                    AndTwo = true;
+                }
+            }
             waitstick = -(gamepad1.right_stick_y / 10000);
             if (PushWait) {
                 telemetry.addLine("Changing Wait Before Push");
@@ -408,11 +445,43 @@ public class REDRIGHTREAL extends LinearOpMode {
                             slides.setTargetPosition(550);
                             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             twist.setPosition(GlobalValues.twistdrop);
-                            currentstate = TradWifeState.WaitBeforePark;
+                            if (JustPark) {
+                                currentstate = TradWifeState.WaitBeforePark;
+                            } else if (AndTwo){
+                                currentstate = TradWifeState.WaitBeforeScore2;
+                            } else {
+                                currentstate = TradWifeState.WaitBeforePark;
+                            }
                         }
                         break;
 
-
+                    case WaitBeforeIntake:
+                        if (!drive.isBusy()) {
+                            WaitTimer.reset();
+                            linksklauw.setPosition(GlobalValues.linkspickup);
+                            currentstate = TradWifeState.ToIntake;
+                            rechtsklauw.setPosition(GlobalValues.rechtsdrop);
+                        }
+                        break;
+                    case ToIntake:
+                        if(WaitTimer.seconds() >= WaitBeforeIntake) {
+                            if (LEFT) {
+                                drive.followTrajectorySequenceAsync(LeftToIntake);
+                            } else if (MIDDLE) {
+                                drive.followTrajectorySequenceAsync(MiddleToIntake);
+                            } else if (RIGHT) {
+                                drive.followTrajectorySequenceAsync(RightToIntake);
+                            } else {
+                                drive.followTrajectorySequenceAsync(MiddleToIntake);
+                            }
+                            if(WaitTimer.seconds() >= WaitBeforeIntake+2) {
+                                twist.setPosition(GlobalValues.twistpickup);
+                                slides.setTargetPosition(300);
+                                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                currentstate = TradWifeState.ToPark;
+                            }
+                        }
+                        break;
                     case WaitBeforePark:
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
