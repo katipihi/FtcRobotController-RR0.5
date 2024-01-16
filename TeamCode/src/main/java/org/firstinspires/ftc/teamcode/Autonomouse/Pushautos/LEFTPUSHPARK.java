@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomouse.Pushautos;
 
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.leftmid;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.planeinit;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.rightmid;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -35,8 +39,13 @@ public class LEFTPUSHPARK extends LinearOpMode {
     private OpenCvCamera webcam;
     private DcMotor slides;
     private Servo twist;
+    private Servo plane;
+
     private Servo linksklauw;
     private Servo rechtsklauw;
+
+    private Servo lefthang;
+    private Servo righthang;
     private TrajectoryFollower follower;
 
     private static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
@@ -113,6 +122,10 @@ public class LEFTPUSHPARK extends LinearOpMode {
         slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slides.setDirection(DcMotor.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        righthang = hardwareMap.servo.get(ConfigurationName.righthang);
+
+        lefthang = hardwareMap.servo.get(ConfigurationName.lefthang);
+        plane = hardwareMap.servo.get(ConfigurationName.plane);
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();
 
@@ -160,6 +173,17 @@ public class LEFTPUSHPARK extends LinearOpMode {
         TrajectorySequence StartToLeft = drive.trajectorySequenceBuilder(startPose)
                 .lineToLinearHeading(new Pose2d(22,42,Math.toRadians(270)))
                 .build();
+        TrajectorySequence LeftToBaby = drive.trajectorySequenceBuilder(StartToLeft.end())
+                .lineToLinearHeading(new Pose2d(22, 48, Math.toRadians(270)))
+                .build();
+        TrajectorySequence RightToBaby = drive.trajectorySequenceBuilder(StartToRight.end())
+                .lineToConstantHeading(new Vector2d(13,39.5))
+                .build();
+        TrajectorySequence MiddleToBaby = drive.trajectorySequenceBuilder(StartToMiddle.end())
+                .lineToLinearHeading(new Pose2d(14, 40, Math.toRadians(305)))
+                .build();
+
+
 
         ElapsedTime WaitTimer = new ElapsedTime();
 
@@ -285,6 +309,9 @@ public class LEFTPUSHPARK extends LinearOpMode {
                 }
             }
             linksklauw.setPosition(GlobalValues.linkspickup);
+            lefthang.setPosition(leftmid);
+            righthang.setPosition(rightmid);
+            plane.setPosition(planeinit);
             rechtsklauw.setPosition(GlobalValues.rechtspickup);
 
 
@@ -328,20 +355,15 @@ public class LEFTPUSHPARK extends LinearOpMode {
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
                             rechtsklauw.setPosition(GlobalValues.rechtsdrop);
-                            slides.setTargetPosition(50);
-                            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             currentstate = TradWifeState.FinishedSLAY;
                         }
                         break;
 
                     case FinishedSLAY:
-                        if (WaitTimer.seconds()>=Chill) {
-                            Sensitive = false;
-                            slides.setTargetPosition(0);
+                        if(WaitTimer.seconds() >= WaitBeforePush) {
+                            slides.setTargetPosition(50);
                             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         }
-                        break;
-
                 }
                 // We update drive continuously in the background, regardless of state
                 drive.update();

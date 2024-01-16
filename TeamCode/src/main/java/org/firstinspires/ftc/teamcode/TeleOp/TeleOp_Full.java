@@ -248,9 +248,9 @@ public class TeleOp_Full extends LinearOpMode {
                         slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     }
 
-                    if (gamepad2.share && slideystate != Slideys.GROUND) {
-                        slideystate = Slideys.GROUND;
-                    }
+//                    if (gamepad2.share && slideystate != Slideys.GROUND) {
+//                        slideystate = Slideys.GROUND;
+//                    }
                     if (gamepad2.share){
                         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
@@ -266,8 +266,8 @@ public class TeleOp_Full extends LinearOpMode {
                         lefthang.setPosition(leftlow);
                         righthang.setPosition(rightlow);
                     } if (gamepad2.left_trigger>0.02) {
-                    lefthang.setPosition(lefthigh);
-                    righthang.setPosition(righthigh);}
+                        lefthang.setPosition(lefthigh);
+                        righthang.setPosition(righthigh);}
                     if (gamepad2.a){
                         lefthang.setPosition(leftmid);
                         righthang.setPosition(rightmid);
@@ -277,7 +277,8 @@ public class TeleOp_Full extends LinearOpMode {
                     }
                     if(gamepad2.dpad_up){
                         controlstate = controls.Hangplane;
-                    } if (gamepad2.left_stick_button&&gamepad2.right_stick_button){
+                    }
+                    if (gamepad2.left_stick_button&&gamepad2.right_stick_button){
                         plane.setPosition(planeshoot);
                     }
                     telemetry.addLine("HANGENBITCH");

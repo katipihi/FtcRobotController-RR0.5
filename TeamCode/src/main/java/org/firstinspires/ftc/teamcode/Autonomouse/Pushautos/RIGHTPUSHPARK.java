@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.Autonomouse.Pushautos;
 
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.leftmid;
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.planeinit;
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.rightmid;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.leftmid;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.planeinit;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.rightmid;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
