@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomouse;
 
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.leftmid;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.planeinit;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.rightmid;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -32,7 +36,13 @@ public class RIGHTPUSHPARK extends LinearOpMode {
     private DcMotor leftRear;
     private DcMotor rightRear;
     private OpenCvCamera webcam;
+    private Servo plane;
+
     private Servo linksklauw;
+    private Servo rechtsklauw;
+
+    private Servo lefthang;
+    private Servo righthang;    private DcMotor slides;
 
     private static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 360; // height of wanted camera resolution
@@ -90,6 +100,14 @@ public class RIGHTPUSHPARK extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         linksklauw = hardwareMap.servo.get(ConfigurationName.linksklauw);
+        slides = hardwareMap.dcMotor.get(ConfigurationName.slides);
+        slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slides.setDirection(DcMotor.Direction.REVERSE);
+        slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        righthang = hardwareMap.servo.get(ConfigurationName.righthang);
+
+        lefthang = hardwareMap.servo.get(ConfigurationName.lefthang);
+        plane = hardwareMap.servo.get(ConfigurationName.plane);
 
         // OpenCV webcam
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -215,6 +233,9 @@ public class RIGHTPUSHPARK extends LinearOpMode {
                 ParkMiddle = true;
             }
             linksklauw.setPosition(GlobalValues.linkspickup);
+            lefthang.setPosition(leftmid);
+            righthang.setPosition(rightmid);
+            plane.setPosition(planeinit);
 
 
             telemetry.update();
@@ -252,7 +273,8 @@ public class RIGHTPUSHPARK extends LinearOpMode {
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
                             linksklauw.setPosition(GlobalValues.linksdrop);
-                            currentstate = TradWifeState.ToPark;
+                            currentstate = TradWifeState.FinishedSLAY;
+                            WaitTimer.reset();
                         }
                         break;
 
@@ -271,8 +293,12 @@ public class RIGHTPUSHPARK extends LinearOpMode {
 //                        }
 //                        break;
 //
-//                    case FinishedSLAY:
-//                        break;
+                    case FinishedSLAY:
+                        if(WaitTimer.seconds() >= WaitBeforePush){
+                            slides.setTargetPosition(40);
+                            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        }
+                        break;
 
                 }
                 // We update drive continuously in the background, regardless of state

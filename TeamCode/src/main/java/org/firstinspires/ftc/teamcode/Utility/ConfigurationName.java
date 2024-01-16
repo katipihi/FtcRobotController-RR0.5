@@ -17,6 +17,8 @@ public class ConfigurationName {
     public static String linksklauw = "lkl";
     public static String lefthang = "lhg";
     public static String righthang = "rhg";
+    public static String plane = "pln";
+
 
 
 }

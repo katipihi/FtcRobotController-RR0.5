@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomouse;
 
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.leftmid;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.planeinit;
+import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.rightmid;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -33,8 +37,13 @@ public class BLUELEFTREAL extends LinearOpMode {
     private OpenCvCamera webcam;
     private DcMotor slides;
     private Servo twist;
+    private Servo plane;
+
     private Servo linksklauw;
     private Servo rechtsklauw;
+
+    private Servo lefthang;
+    private Servo righthang;
     private TrajectoryFollower follower;
 
     private static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
@@ -111,6 +120,10 @@ public class BLUELEFTREAL extends LinearOpMode {
         slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slides.setDirection(DcMotor.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        righthang = hardwareMap.servo.get(ConfigurationName.righthang);
+
+        lefthang = hardwareMap.servo.get(ConfigurationName.lefthang);
+        plane = hardwareMap.servo.get(ConfigurationName.plane);
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();
 
@@ -168,7 +181,7 @@ public class BLUELEFTREAL extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(14, 40, Math.toRadians(305)))
                 .build();
         TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(LeftToBaby.end())
-                .lineToLinearHeading(new Pose2d(49, 43, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(50, 43, Math.toRadians(0)))
                 .build();
         TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(RightToBaby.end())
                 .lineToLinearHeading(new Pose2d(50, 29, Math.toRadians(0)))
@@ -328,6 +341,10 @@ public class BLUELEFTREAL extends LinearOpMode {
                 }
             }
             linksklauw.setPosition(GlobalValues.linkspickup);
+            lefthang.setPosition(leftmid);
+            righthang.setPosition(rightmid);
+            plane.setPosition(planeinit);
+            rechtsklauw.setPosition(GlobalValues.rechtspickup);
             rechtsklauw.setPosition(GlobalValues.rechtspickup);
 
 
