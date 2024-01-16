@@ -10,17 +10,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 //@Disabled
 @Config
 @TeleOp(name="Rijden, Slides, Nout Grijper", group="linop")
-public class TeleOp_GrijpNoutSlidesRijden extends LinearOpMode {
+public class TeleOp_Full extends LinearOpMode {
 
     public static double turnfactor;
     public static double maxspeed;

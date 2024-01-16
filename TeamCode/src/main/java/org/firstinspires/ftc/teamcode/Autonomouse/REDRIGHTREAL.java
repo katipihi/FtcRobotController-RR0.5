@@ -85,7 +85,10 @@ public class REDRIGHTREAL extends LinearOpMode {
     double WaitBeforePush = 1.5;
     double WaitBeforeScore = 1.5;
     double WaitBeforeIntake = 1.5;
+    double WaitBeforeScore2 = 1.5;
     double WaitBeforePark = 1.5;
+    double WaitBeforePark2 = 1.5;
+
     double Chill = 1.5;
 
 
@@ -94,9 +97,12 @@ public class REDRIGHTREAL extends LinearOpMode {
         WaitBeforePush,
         ToPush,
         WaitBeforeScore,
+        WaitBeforeScore2,
+
         ToBabyScore,
         ToScore,
         WaitBeforePark,
+        WaitBeforePark2,
         WaitBeforeIntake,
         ToIntake,
         ToScorePt2,
@@ -200,7 +206,27 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
                 .lineToLinearHeading(new Pose2d(-50,-11,Math.toRadians(180)))
                 .build();
-
+        TrajectorySequence IntakeToLeft = drive.trajectorySequenceBuilder(new Pose2d(-50,-11,Math.toRadians(180)))
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
+                .setReversed(false)
+                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(49, -43, Math.toRadians(0)))
+                .build();
+        TrajectorySequence IntakeToMiddle = drive.trajectorySequenceBuilder(new Pose2d(-50,-11,Math.toRadians(180)))
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
+                .setReversed(false)
+                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(49.5, -30, Math.toRadians(0)))
+                .build();
+        TrajectorySequence IntakeToRight = drive.trajectorySequenceBuilder(new Pose2d(-50,-11,Math.toRadians(180)))
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
+                .setReversed(false)
+                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(49.5, -30, Math.toRadians(0)))
+                .build();
         TrajectorySequence BabyParkLeft = drive.trajectorySequenceBuilder(LeftTo1.end())
 //                .lineTo(new Vector2d(45,-29))
                 .lineToConstantHeading(new Vector2d(41,-35.5))
@@ -448,7 +474,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                             if (JustPark) {
                                 currentstate = TradWifeState.WaitBeforePark;
                             } else if (AndTwo){
-                                currentstate = TradWifeState.WaitBeforeScore2;
+                                currentstate = TradWifeState.WaitBeforeIntake;
                             } else {
                                 currentstate = TradWifeState.WaitBeforePark;
                             }
@@ -478,12 +504,47 @@ public class REDRIGHTREAL extends LinearOpMode {
                                 twist.setPosition(GlobalValues.twistpickup);
                                 slides.setTargetPosition(300);
                                 slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                                currentstate = TradWifeState.ToPark;
+                                currentstate = TradWifeState.WaitBeforeScore2;
                             }
                         }
                         break;
-                    case WaitBeforePark:
+                    case WaitBeforeScore2:
                         if (!drive.isBusy()) {
+                            WaitTimer.reset();
+                            linksklauw.setPosition(GlobalValues.linkspickup);
+                            currentstate = TradWifeState.ToScorePt2;
+                            rechtsklauw.setPosition(GlobalValues.rechtspickup);
+                        }
+                        break;
+                    case ToScorePt2:
+                        if(WaitTimer.seconds() >= WaitBeforeScore2) {
+                            if (LEFT) {
+                                drive.followTrajectorySequenceAsync(IntakeToLeft);
+                            } else if (MIDDLE) {
+                                drive.followTrajectorySequenceAsync(IntakeToMiddle);
+                            } else if (RIGHT) {
+                                drive.followTrajectorySequenceAsync(IntakeToRight);
+                            } else {
+                                drive.followTrajectorySequenceAsync(IntakeToMiddle);
+                            }
+                            if(WaitTimer.seconds() >= WaitBeforeScore2+2) {
+                                slides.setTargetPosition(550);
+                                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                twist.setPosition(GlobalValues.twistdrop);
+                                currentstate = TradWifeState.WaitBeforePark2;
+                            }
+                        }
+                        break;
+                    case WaitBeforePark2:
+                        if (!drive.isBusy()) {
+                            WaitTimer.reset();
+                            linksklauw.setPosition(GlobalValues.links1drop);
+                            rechtsklauw.setPosition(GlobalValues.rechts1drop);
+                            currentstate = TradWifeState.WaitBeforePark;
+                        }
+                        break;
+                    case WaitBeforePark:
+                        if (!drive.isBusy() && WaitTimer.seconds() >= WaitBeforePark2) {
                             WaitTimer.reset();
                             linksklauw.setPosition(GlobalValues.linksdrop);
                             currentstate = TradWifeState.ToBabyPark;
