@@ -75,7 +75,7 @@ public class REDRIGHTREAL extends LinearOpMode {
     boolean LEFT = false;
     boolean MIDDLE = false;
     boolean RIGHT = false;
-    boolean AndTwo = false;
+    boolean AndTwo = true;
     boolean JustPark = false;
 
 
@@ -91,12 +91,12 @@ public class REDRIGHTREAL extends LinearOpMode {
     public boolean Sensitive = false;
 
     double waitstick;
-    double WaitBeforePush = 1.5;
-    double WaitBeforeScore = 1.5;
-    double WaitBeforeIntake = 1.5;
-    double WaitBeforeScore2 = 1.5;
-    double WaitBeforePark = 1.5;
-    double WaitBeforePark2 = 1.5;
+    double WaitBeforePush = 0.0;
+    double WaitBeforeScore = 0.75;
+    double WaitBeforeIntake = 0.75;
+    double WaitBeforeScore2 = 0.75;
+    double WaitBeforePark = 0.75;
+    double WaitBeforePark2 = 1.0;
 
     double Chill = 1.5;
 
@@ -204,41 +204,111 @@ public class REDRIGHTREAL extends LinearOpMode {
         TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(MiddleToBaby.end())
                 .splineToLinearHeading(new Pose2d(50, -37.5, Math.toRadians(0)), Math.toRadians(0))
                 .build();
+//        TrajectorySequence LeftToIntake = drive.trajectorySequenceBuilder(LeftTo1.end())
+////                .setReversed(true)
+////                .lineToConstantHeading(new Vector2d(40,-45))
+////                .setReversed(false)
+////                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
+////                .lineToLinearHeading(new Pose2d(-50,-11,Math.toRadians(180)))
+//                .resetConstraints()
+//                .back(7)
+//                .addDisplacementMarker(3, () -> {
+//                    twist.setPosition(GlobalValues.twistpickup);
+//                })
+//                .strafeLeft(20)
+//                .addDisplacementMarker(10, () -> {
+//                    slides.setTargetPosition(0);
+//                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                })
+//                .lineToLinearHeading(new Pose2d(-1,-11,Math.toRadians(180)))
+//                .addDisplacementMarker(80, () -> {
+//                    slides.setTargetPosition(300);
+//                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                })
+//                .lineToLinearHeading(new Pose2d(-52,-11,Math.toRadians(180)))
+//                .build();
         TrajectorySequence LeftToIntake = drive.trajectorySequenceBuilder(LeftTo1.end())
-                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
-                .lineToLinearHeading(new Pose2d(-50,-11,Math.toRadians(180)))
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(23,-10,Math.toRadians(180)),Math.toRadians(180))
+                .setReversed(false)
+                .lineToLinearHeading(new Pose2d(-62.5,-8.8,Math.toRadians(180)))
+                .addDisplacementMarker(70, () -> {
+                    slides.setTargetPosition(100);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(13, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(2, () -> {
+                    twist.setPosition(GlobalValues.twistpickup);
+                })
                 .build();
         TrajectorySequence MiddleToIntake = drive.trajectorySequenceBuilder(MiddleTo2.end())
-                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)),Math.toRadians(180))
+                .setReversed(false)
                 .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
-                .lineToLinearHeading(new Pose2d(-50,-11,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-52,-11,Math.toRadians(180)))
                 .build();
         TrajectorySequence RightToIntake = drive.trajectorySequenceBuilder(RightTo3.end())
                 .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
-                .lineToLinearHeading(new Pose2d(-50,-11,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-52,-11,Math.toRadians(180)))
                 .build();
-        TrajectorySequence IntakeToLeft = drive.trajectorySequenceBuilder(new Pose2d(-50,-11,Math.toRadians(180)))
+        TrajectorySequence IntakeToLeft = drive.trajectorySequenceBuilder(LeftToIntake.end())
                 .setReversed(true)
-                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
+//                                .splineToSplineHeading(new Pose2d(35,-11,Math.toRadians(0)),Math.toRadians(0))
+                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(180)))
+                .splineToLinearHeading(new Pose2d(49,-43,Math.toRadians(0)),Math.toRadians(0))
                 .setReversed(false)
-                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(49, -43, Math.toRadians(0)))
+                .addDisplacementMarker(10, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(75, () -> {
+                    slides.setTargetPosition(600);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(78, () -> {
+                    twist.setPosition(GlobalValues.twistdrop);
+                })
                 .build();
-        TrajectorySequence IntakeToMiddle = drive.trajectorySequenceBuilder(new Pose2d(-50,-11,Math.toRadians(180)))
+        TrajectorySequence IntakeToMiddle = drive.trajectorySequenceBuilder(MiddleToIntake.end())
                 .setReversed(true)
                 .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
                 .setReversed(false)
                 .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(49.5, -30, Math.toRadians(0)))
+                .addDisplacementMarker(10, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(75, () -> {
+                    slides.setTargetPosition(500);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(78, () -> {
+                    twist.setPosition(GlobalValues.twistdrop);
+                })
                 .build();
-        TrajectorySequence IntakeToRight = drive.trajectorySequenceBuilder(new Pose2d(-50,-11,Math.toRadians(180)))
+        TrajectorySequence IntakeToRight = drive.trajectorySequenceBuilder(RightToIntake.end())
                 .setReversed(true)
                 .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
                 .setReversed(false)
                 .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(49.5, -30, Math.toRadians(0)))
+                .addDisplacementMarker(10, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(75, () -> {
+                    slides.setTargetPosition(500);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(78, () -> {
+                    twist.setPosition(GlobalValues.twistdrop);
+                })
                 .build();
         TrajectorySequence BabyParkLeft = drive.trajectorySequenceBuilder(LeftTo1.end())
 //                .lineTo(new Vector2d(45,-29))
@@ -407,7 +477,8 @@ public class REDRIGHTREAL extends LinearOpMode {
             linksklauw.setPosition(GlobalValues.linkspickup);
             lefthang.setPosition(leftmid);
             righthang.setPosition(rightmid);
-            plane.setPosition(planeinit);            rechtsklauw.setPosition(GlobalValues.rechtspickup);
+            plane.setPosition(planeinit);
+            rechtsklauw.setPosition(GlobalValues.rechtspickup);
 
 
             telemetry.update();
@@ -499,7 +570,6 @@ public class REDRIGHTREAL extends LinearOpMode {
                     case WaitBeforeIntake:
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
-                            linksklauw.setPosition(GlobalValues.linkspickup);
                             currentstate = TradWifeState.ToIntake;
                             rechtsklauw.setPosition(GlobalValues.rechtsdrop);
                         }
@@ -515,12 +585,20 @@ public class REDRIGHTREAL extends LinearOpMode {
                             } else {
                                 drive.followTrajectorySequenceAsync(MiddleToIntake);
                             }
-                            if(WaitTimer.seconds() >= WaitBeforeIntake+2) {
-                                twist.setPosition(GlobalValues.twistpickup);
-                                slides.setTargetPosition(300);
-                                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                                currentstate = TradWifeState.WaitBeforeScore2;
-                            }
+                            currentstate = TradWifeState.WaitBeforeScore2;
+//                            if(WaitTimer.seconds() >= WaitBeforeIntake+2&&WaitTimer.seconds() <= WaitBeforeIntake+2.5) {
+//                                twist.setPosition(GlobalValues.twistpickup);
+//                            }
+//                            if(WaitTimer.seconds() >= WaitBeforeIntake+2.5&&WaitTimer.seconds() <= WaitBeforeIntake+3) {
+//                                slides.setTargetPosition(0);
+//                                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                            }
+//                            if(WaitTimer.seconds() >= WaitBeforeIntake+5) {
+//                                twist.setPosition(GlobalValues.twistpickup);
+//                                slides.setTargetPosition(300);
+//                                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                                currentstate = TradWifeState.WaitBeforeScore2;
+//                            }
                         }
                         break;
                     case WaitBeforeScore2:
@@ -542,12 +620,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                             } else {
                                 drive.followTrajectorySequenceAsync(IntakeToMiddle);
                             }
-                            if(WaitTimer.seconds() >= WaitBeforeScore2+2) {
-                                slides.setTargetPosition(550);
-                                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                                twist.setPosition(GlobalValues.twistdrop);
-                                currentstate = TradWifeState.WaitBeforePark2;
-                            }
+                            currentstate = TradWifeState.WaitBeforePark2;
                         }
                         break;
                     case WaitBeforePark2:

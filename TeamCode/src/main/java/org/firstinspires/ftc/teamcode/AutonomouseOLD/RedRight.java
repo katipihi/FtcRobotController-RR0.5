@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.Autonomouse.ContourPipeline;
 import org.firstinspires.ftc.teamcode.Autonomouse.PoseStorage;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden;
+import org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
 import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
 import org.opencv.core.Scalar;

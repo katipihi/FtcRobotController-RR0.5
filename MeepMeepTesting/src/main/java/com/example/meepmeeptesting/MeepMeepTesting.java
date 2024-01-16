@@ -14,19 +14,12 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 10)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-50,-11,Math.toRadians(180)))
-//                                .lineTo(new Vector2d(-38, -31))
-//                                .lineTo(new Vector2d(-38, -11))
-                                .setReversed(true)
-                                .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(135)))
-                                .setReversed(false)
-                                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
+                        drive.trajectorySequenceBuilder(new Pose2d(1, -38.5,Math.toRadians(0)))
+                                .lineToConstantHeading(new Vector2d(13,-39.5))
 
-//                                .lineToSplineHeading(new Pose2d(-60,-11,Math.toRadians(180)))
-                                .lineToLinearHeading(new Pose2d(-50,-11,Math.toRadians(180)))
 
-//                                .lineToLinearHeading(new Pose2d(45,-35,Math.toRadians(90)))
-//                                .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
+//                                .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
+//                                .lineToLinearHeading(new Pose2d(49, -43, Math.toRadians(0)))
                                 .build()
                 );
 
