@@ -1,16 +1,11 @@
 package org.firstinspires.ftc.teamcode.Autonomouse;
 
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.leftmid;
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.planeinit;
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.rightmid;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -30,7 +25,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
 @Autonomous
-public class REDRIGHTREAL extends LinearOpMode {
+public class BLUERIGHTREAL extends LinearOpMode {
     private DcMotor leftFront;
     private DcMotor rightFront;
     private DcMotor leftRear;
@@ -38,13 +33,8 @@ public class REDRIGHTREAL extends LinearOpMode {
     private OpenCvCamera webcam;
     private DcMotor slides;
     private Servo twist;
-    private Servo plane;
-
     private Servo linksklauw;
     private Servo rechtsklauw;
-
-    private Servo lefthang;
-    private Servo righthang;
     private TrajectoryFollower follower;
 
     private static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
@@ -135,10 +125,6 @@ public class REDRIGHTREAL extends LinearOpMode {
         slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slides.setDirection(DcMotor.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        righthang = hardwareMap.servo.get(ConfigurationName.righthang);
-
-        lefthang = hardwareMap.servo.get(ConfigurationName.lefthang);
-        plane = hardwareMap.servo.get(ConfigurationName.plane);
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();
 
@@ -202,7 +188,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(49.5, -30, Math.toRadians(0)))
                 .build();
         TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(MiddleToBaby.end())
-                .splineToLinearHeading(new Pose2d(50, -37.5, Math.toRadians(0)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(50, -35.5, Math.toRadians(0)), Math.toRadians(0))
                 .build();
         TrajectorySequence LeftToIntake = drive.trajectorySequenceBuilder(LeftTo1.end())
                 .lineToLinearHeading(new Pose2d(40,-31,Math.toRadians(0)))
@@ -405,9 +391,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                 }
             }
             linksklauw.setPosition(GlobalValues.linkspickup);
-            lefthang.setPosition(leftmid);
-            righthang.setPosition(rightmid);
-            plane.setPosition(planeinit);            rechtsklauw.setPosition(GlobalValues.rechtspickup);
+            rechtsklauw.setPosition(GlobalValues.rechtspickup);
 
 
             telemetry.update();

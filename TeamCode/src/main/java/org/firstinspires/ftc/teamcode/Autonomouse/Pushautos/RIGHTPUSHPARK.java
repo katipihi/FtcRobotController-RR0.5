@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomouse;
+package org.firstinspires.ftc.teamcode.Autonomouse.Pushautos;
 
 import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.leftmid;
 import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden.planeinit;
@@ -17,9 +17,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Autonomouse.ContourPipeline;
+import org.firstinspires.ftc.teamcode.Autonomouse.PoseStorage;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.TeleOp.TeleOp_GrijpNoutSlidesRijden;
+import org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
 import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
 import org.opencv.core.Scalar;

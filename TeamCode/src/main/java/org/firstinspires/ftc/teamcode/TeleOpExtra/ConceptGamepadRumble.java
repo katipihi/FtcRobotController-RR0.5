@@ -87,7 +87,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Concept: Gamepad Rumble", group ="Concept")
-@Disabled
 public class ConceptGamepadRumble extends LinearOpMode
 {
     boolean lastA = false;                      // Use to track the prior button state.
