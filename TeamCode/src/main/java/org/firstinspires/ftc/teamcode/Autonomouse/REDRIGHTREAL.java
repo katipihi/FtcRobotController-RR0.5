@@ -115,6 +115,7 @@ public class REDRIGHTREAL extends LinearOpMode {
         WaitBeforeIntake,
         ToIntake,
         ToScorePt2,
+        Down,
         ToBabyPark,
         ToPark,
         FinishedSLAY,
@@ -231,9 +232,9 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(23,-10,Math.toRadians(180)),Math.toRadians(180))
                 .setReversed(false)
-                .lineToLinearHeading(new Pose2d(-62.5,-8.8,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-63.35,-9.35,Math.toRadians(180)))
                 .addDisplacementMarker(70, () -> {
-                    slides.setTargetPosition(100);
+                    slides.setTargetPosition(110);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(13, () -> {
@@ -250,7 +251,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .setReversed(false)
                 .lineToLinearHeading(new Pose2d(-62.5,-8.8,Math.toRadians(180)))
                 .addDisplacementMarker(70, () -> {
-                    slides.setTargetPosition(100);
+                    slides.setTargetPosition(105);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(13, () -> {
@@ -265,9 +266,13 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(23,-10,Math.toRadians(180)),Math.toRadians(180))
                 .setReversed(false)
-                .lineToLinearHeading(new Pose2d(-62.5,-8.8,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-62.5,-9,Math.toRadians(180)))
                 .addDisplacementMarker(70, () -> {
-                    slides.setTargetPosition(100);
+                    slides.setTargetPosition(105);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(70, () -> {
+                    slides.setTargetPosition(105);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(13, () -> {
@@ -281,7 +286,7 @@ public class REDRIGHTREAL extends LinearOpMode {
         TrajectorySequence IntakeToLeft = drive.trajectorySequenceBuilder(LeftToIntake.end())
                 .setReversed(true)
                 .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(180)))
-                .splineToLinearHeading(new Pose2d(49,-43,Math.toRadians(0)),Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(49,-42,Math.toRadians(0)),Math.toRadians(0))
                 .setReversed(false)
                 .addDisplacementMarker(10, () -> {
                     slides.setTargetPosition(0);
@@ -602,11 +607,19 @@ public class REDRIGHTREAL extends LinearOpMode {
                             } else {
                                 drive.followTrajectorySequenceAsync(MiddleToIntake);
                             }
+                            currentstate = TradWifeState.Down;
+                        }
+                        break;
+                    case Down:
+                        if (!drive.isBusy()) {
+                            WaitTimer.reset();
+                            slides.setTargetPosition(93);
+                            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             currentstate = TradWifeState.WaitBeforeScore2;
                         }
                         break;
                     case WaitBeforeScore2:
-                        if (!drive.isBusy()) {
+                        if (WaitTimer.seconds() >= 0.75) {
                             WaitTimer.reset();
                             linksklauw.setPosition(GlobalValues.linkspickup);
                             currentstate = TradWifeState.ToScorePt2;
