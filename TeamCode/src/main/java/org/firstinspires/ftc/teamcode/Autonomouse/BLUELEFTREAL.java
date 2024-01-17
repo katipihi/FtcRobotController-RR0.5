@@ -82,13 +82,21 @@ public class BLUELEFTREAL extends LinearOpMode {
     boolean ParkLeft = false;
     boolean ParkMiddle = true;
     boolean ParkRight = false;
+    boolean AndTwo = true;
+    boolean JustPark = false;
+
+
 
     public boolean Sensitive = false;
 
     double waitstick;
-    double WaitBeforePush = 1.5;
-    double WaitBeforeScore = 1.5;
-    double WaitBeforePark = 1.5;
+    double WaitBeforePush = 0.0;
+    double WaitBeforeScore = 0.75;
+    double WaitBeforeIntake = 0.75;
+    double WaitBeforeScore2 = 0.75;
+    double WaitBeforePark = 0.75;
+    double WaitBeforePark2 = 1.0;
+
     double Chill = 1.5;
 
 
@@ -97,9 +105,15 @@ public class BLUELEFTREAL extends LinearOpMode {
         WaitBeforePush,
         ToPush,
         WaitBeforeScore,
+        WaitBeforeScore2,
+
         ToBabyScore,
         ToScore,
         WaitBeforePark,
+        WaitBeforePark2,
+        WaitBeforeIntake,
+        ToIntake,
+        ToScorePt2,
         ToBabyPark,
         ToPark,
         FinishedSLAY,
@@ -189,6 +203,108 @@ public class BLUELEFTREAL extends LinearOpMode {
         TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(MiddleToBaby.end())
                 .splineToLinearHeading(new Pose2d(50, 35.5, Math.toRadians(0)), Math.toRadians(0))
                 .build();
+        TrajectorySequence LeftToIntake = drive.trajectorySequenceBuilder(LeftTo1.end())
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(23,10,Math.toRadians(180)),Math.toRadians(180))
+                .setReversed(false)
+                .lineToLinearHeading(new Pose2d(-62.5,8.8,Math.toRadians(180)))
+                .addDisplacementMarker(70, () -> {
+                    slides.setTargetPosition(100);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(13, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(2, () -> {
+                    twist.setPosition(GlobalValues.twistpickup);
+                })
+                .build();
+        TrajectorySequence MiddleToIntake = drive.trajectorySequenceBuilder(MiddleTo2.end())
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(23,10,Math.toRadians(180)),Math.toRadians(180))
+                .setReversed(false)
+                .lineToLinearHeading(new Pose2d(-62.5,8.8,Math.toRadians(180)))
+                .addDisplacementMarker(70, () -> {
+                    slides.setTargetPosition(100);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(13, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(2, () -> {
+                    twist.setPosition(GlobalValues.twistpickup);
+                })
+                .build();
+        TrajectorySequence RightToIntake = drive.trajectorySequenceBuilder(RightTo3.end())
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(23,10,Math.toRadians(180)),Math.toRadians(180))
+                .setReversed(false)
+                .lineToLinearHeading(new Pose2d(-62.5,8.8,Math.toRadians(180)))
+                .addDisplacementMarker(70, () -> {
+                    slides.setTargetPosition(100);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(13, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(2, () -> {
+                    twist.setPosition(GlobalValues.twistpickup);
+                })
+                .build();
+        TrajectorySequence IntakeToLeft = drive.trajectorySequenceBuilder(LeftToIntake.end())
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(35,11,Math.toRadians(180)))
+                .splineToLinearHeading(new Pose2d(50, 29, Math.toRadians(0)),Math.toRadians(0))
+                .setReversed(false)
+                .addDisplacementMarker(10, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(75, () -> {
+                    slides.setTargetPosition(600);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(78, () -> {
+                    twist.setPosition(GlobalValues.twistdrop);
+                })
+                .build();
+        TrajectorySequence IntakeToMiddle = drive.trajectorySequenceBuilder(MiddleToIntake.end())
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(35,11,Math.toRadians(180)))
+                .splineToLinearHeading(new Pose2d(50, 29, Math.toRadians(0)),Math.toRadians(0))
+                .setReversed(false)
+                .addDisplacementMarker(10, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(75, () -> {
+                    slides.setTargetPosition(500);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(78, () -> {
+                    twist.setPosition(GlobalValues.twistdrop);
+                })
+                .build();
+        TrajectorySequence IntakeToRight = drive.trajectorySequenceBuilder(RightToIntake.end())
+                .setReversed(true)
+                .lineToLinearHeading(new Pose2d(35,11,Math.toRadians(180)))
+                .splineToLinearHeading(new Pose2d(50, 43, Math.toRadians(0)),Math.toRadians(0))
+                .setReversed(false)
+                .addDisplacementMarker(10, () -> {
+                    slides.setTargetPosition(0);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(75, () -> {
+                    slides.setTargetPosition(500);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
+                .addDisplacementMarker(78, () -> {
+                    twist.setPosition(GlobalValues.twistdrop);
+                })
+                .build();
         TrajectorySequence BabyParkRight = drive.trajectorySequenceBuilder(RightTo3.end())
 //                .lineTo(new Vector2d(45,-29))
                 .lineToConstantHeading(new Vector2d(41,35.5))
@@ -255,7 +371,21 @@ public class BLUELEFTREAL extends LinearOpMode {
                     telemetry.addLine("LINKSBITCH");
                 }
             }
-
+            if (AndTwo) {
+                telemetry.addLine("2 + 2 -- Share Voor Alleen 2");
+                if (gamepad1.share){
+                    JustPark = true;
+                    AndTwo = false;
+                }
+            }
+            if (JustPark) {
+                telemetry.addLine("Alleen 2 -- Options Voor 2 + 2");
+                WaitBeforePush += waitstick;
+                if (gamepad1.options){
+                    JustPark = false;
+                    AndTwo = true;
+                }
+            }
 
             waitstick = -(gamepad1.right_stick_y / 10000);
             if (PushWait) {
@@ -290,8 +420,7 @@ public class BLUELEFTREAL extends LinearOpMode {
                 telemetry.addLine("Park Right:}");
             }
             telemetry.addLine();
-            telemetry.addLine("Right Trigger = Park More Right");
-            telemetry.addLine("Left Trigger = Park More Left");
+            telemetry.addLine("Triggers = Change Park");
             if (gamepad1.a) {
                 PushWait = true;
                 ScoreWait = false;
@@ -424,17 +553,71 @@ public class BLUELEFTREAL extends LinearOpMode {
                             slides.setTargetPosition(550);
                             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             twist.setPosition(GlobalValues.twistdrop);
-                            currentstate = TradWifeState.WaitBeforePark;
+                            if (JustPark) {
+                                currentstate = TradWifeState.WaitBeforePark;
+                            } else if (AndTwo){
+                                currentstate = TradWifeState.WaitBeforeIntake;
+                            } else {
+                                currentstate = TradWifeState.WaitBeforePark;
+                            }
                         }
                         break;
 
-
-                    case WaitBeforePark:
+                    case WaitBeforeIntake:
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
+                            currentstate = TradWifeState.ToIntake;
                             linksklauw.setPosition(GlobalValues.linksdrop);
+                        }
+                        break;
+                    case ToIntake:
+                        if(WaitTimer.seconds() >= WaitBeforeIntake) {
+                            if (LEFT) {
+                                drive.followTrajectorySequenceAsync(LeftToIntake);
+                            } else if (MIDDLE) {
+                                drive.followTrajectorySequenceAsync(MiddleToIntake);
+                            } else if (RIGHT) {
+                                drive.followTrajectorySequenceAsync(RightToIntake);
+                            } else {
+                                drive.followTrajectorySequenceAsync(MiddleToIntake);
+                            }
+                            currentstate = TradWifeState.WaitBeforeScore2;
+                        }
+                        break;
+                    case WaitBeforeScore2:
+                        if (!drive.isBusy()) {
+                            WaitTimer.reset();
+                            linksklauw.setPosition(GlobalValues.linkspickup);
+                            currentstate = TradWifeState.ToScorePt2;
+                            rechtsklauw.setPosition(GlobalValues.rechtspickup);
+                        }
+                        break;
+                    case ToScorePt2:
+                        if(WaitTimer.seconds() >= WaitBeforeScore2) {
+                            if (LEFT) {
+                                drive.followTrajectorySequenceAsync(IntakeToLeft);
+                            } else if (MIDDLE) {
+                                drive.followTrajectorySequenceAsync(IntakeToMiddle);
+                            } else if (RIGHT) {
+                                drive.followTrajectorySequenceAsync(IntakeToRight);
+                            } else {
+                                drive.followTrajectorySequenceAsync(IntakeToMiddle);
+                            }
+                            currentstate = TradWifeState.WaitBeforePark2;
+                        }
+                        break;
+                    case WaitBeforePark2:
+                        if (!drive.isBusy()) {
+                            WaitTimer.reset();
+                            rechtsklauw.setPosition(GlobalValues.rechts1drop);
+                            currentstate = TradWifeState.WaitBeforePark;
+                        }
+                        break;
+                    case WaitBeforePark:
+                        if (!drive.isBusy() && WaitTimer.seconds() >= WaitBeforePark2) {
+                            WaitTimer.reset();
                             currentstate = TradWifeState.ToBabyPark;
-                            linksklauw.setPosition(GlobalValues.linksdrop);
+                            rechtsklauw.setPosition(GlobalValues.rechtsdrop);
                         }
                         break;
                     case ToBabyPark:
