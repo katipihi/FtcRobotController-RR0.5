@@ -106,7 +106,7 @@ public class REDLEFTREALREAL extends LinearOpMode {
     }
 
     TradWifeState currentstate = TradWifeState.idol;
-    Pose2d startPose = (new Pose2d(-15, -64, Math.toRadians(90)));
+    Pose2d startPose = (new Pose2d(-39, -64, Math.toRadians(90)));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -162,17 +162,22 @@ public class REDLEFTREALREAL extends LinearOpMode {
 
         TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
 //                .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
-                .lineToConstantHeading(new Vector2d(-15, 3-8.5))
-                .lineToConstantHeading(new Vector2d(-1, -38.5))
+                .lineToConstantHeading(new Vector2d(-39, 3-8.5))
+                .lineToConstantHeading(new Vector2d(-25, -38.5))
                 .build();
         TrajectorySequence StartToMiddle = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-16.5,-31.5))
+                .lineToConstantHeading(new Vector2d(-40.5,-31.5))
                 .build();
         TrajectorySequence StartToLeft = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-22,-42,Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-46,-42,Math.toRadians(90)))
                 .build();
         TrajectorySequence LeftToBaby = drive.trajectorySequenceBuilder(StartToLeft.end())
-                .lineToLinearHeading(new Pose2d(-22, -48, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(-32, -59, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(22, -59, Math.toRadians(0)))
+                .addDisplacementMarker(55, () -> {
+                    slides.setTargetPosition(300);
+                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                })
                 .build();
         TrajectorySequence RightToBaby = drive.trajectorySequenceBuilder(StartToRight.end())
                 .lineToConstantHeading(new Vector2d(-13,-39.5))
@@ -181,7 +186,7 @@ public class REDLEFTREALREAL extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-14, -40, Math.toRadians(305)))
                 .build();
         TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(LeftToBaby.end())
-                .lineToLinearHeading(new Pose2d(-50, -43, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(50, -35.5, Math.toRadians(0)))
                 .build();
         TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(RightToBaby.end())
                 .lineToLinearHeading(new Pose2d(-50, -29, Math.toRadians(0)))
@@ -403,7 +408,7 @@ public class REDLEFTREALREAL extends LinearOpMode {
                             } else {
                                 drive.followTrajectorySequenceAsync(MiddleToBaby);
                             }
-                            slides.setTargetPosition(275);
+                            slides.setTargetPosition(25);
                             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             currentstate = TradWifeState.ToScore;
                         }

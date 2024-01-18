@@ -1,33 +1,38 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.links1drop;
+import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.linksdrop;
+import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.linkspickup;
+import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.rechts1drop;
+import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.rechtsdrop;
+import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.rechtspickup;
+import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.twistdrop;
+import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.twistpickup;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
+import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
 
 //@Disabled
 @Config
-@TeleOp(name="Rijden, Slides, Nout Grijper", group="linop")
+@TeleOp(name="TeleOp_Full", group="linop")
 public class TeleOp_Full extends LinearOpMode {
 
     public static double turnfactor;
     public static double maxspeed;
 
-    public static double twistdrop = 0.13;
-    public static double twistpickup= 0.81;
-    public static double linksdrop = 0.88;
-    public static double linkspickup = 0.62;
-    public static double links1drop = 0.7;
-    public static double rechtsdrop = 0.14;
-    public static double rechtspickup = 0.45;
-    public static double rechts1drop = 0.3;
+
 
     public static double leftlow = 0;
     public static double lefthigh = 0.85;
@@ -78,11 +83,17 @@ public class TeleOp_Full extends LinearOpMode {
 
     private Servo linksklauw;
     private Servo rechtsklauw;
+    private DistanceSensor linkssensor;
+    private DistanceSensor rechtsssensor;
+
+
 
     private Servo lefthang;
     private Servo righthang;
     public boolean lefttwisted;
     public boolean righttwisted;
+    public boolean sensor = false;
+
     public boolean rightrumbled = false;
     public boolean leftrumbled = false;
     double TwistWait = 1.0;
@@ -125,6 +136,11 @@ public class TeleOp_Full extends LinearOpMode {
 
         lefthang = hardwareMap.servo.get(ConfigurationName.lefthang);
         plane = hardwareMap.servo.get(ConfigurationName.plane);
+
+        linkssensor = hardwareMap.get(DistanceSensor.class, ConfigurationName.linkssensor);
+
+        rechtsssensor = hardwareMap.get(DistanceSensor.class, ConfigurationName.rechtssensor);
+
 
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -247,6 +263,11 @@ public class TeleOp_Full extends LinearOpMode {
                         slides.setTargetPosition(slides.getCurrentPosition() + 15);
                         slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     }
+                    if (gamepad1.touchpad){
+                        sensor = true;
+                    } else {
+                        sensor = false;
+                    }
 
 //                    if (gamepad2.share && slideystate != Slideys.GROUND) {
 //                        slideystate = Slideys.GROUND;
@@ -338,13 +359,16 @@ public class TeleOp_Full extends LinearOpMode {
             telemetry.addData("Pols: ", twist.getPosition());
             telemetry.addData("Slides: ", slides.getCurrentPosition());
             telemetry.addData("SlidesTarget: ", slides.getTargetPosition());
-
-
-
-            if(gamepad2.left_bumper){
-                slides.setTargetPosition(slides.getCurrentPosition()+15);
-                slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            if (sensor) {
+                if (linkssensor.getDistance(DistanceUnit.MM)<70) {
+                    rechtsklauw.setPosition(rechtspickup);
+                }
+                if (linkssensor.getDistance(DistanceUnit.MM)<70) {
+                    linksklauw.setPosition(linkspickup);
+                }
             }
+
+
             double cl = -gamepad2.left_stick_y; // Remember, this is reversed!
             double cr = -gamepad2.right_stick_y; // Counteract imperfect strafing
 

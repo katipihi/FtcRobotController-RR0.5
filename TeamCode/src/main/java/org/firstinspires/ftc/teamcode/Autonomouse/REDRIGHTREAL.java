@@ -644,6 +644,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
                             linksklauw.setPosition(GlobalValues.links1drop);
+                            rechtsklauw.setPosition(GlobalValues.rechts1drop);
                             currentstate = TradWifeState.WaitBeforePark;
                         }
                         break;
@@ -651,6 +652,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                         if (!drive.isBusy() && WaitTimer.seconds() >= WaitBeforePark2) {
                             WaitTimer.reset();
                             linksklauw.setPosition(GlobalValues.linksdrop);
+                            rechtsklauw.setPosition(GlobalValues.rechtsdrop);
                             currentstate = TradWifeState.ToBabyPark;
                         }
                         break;

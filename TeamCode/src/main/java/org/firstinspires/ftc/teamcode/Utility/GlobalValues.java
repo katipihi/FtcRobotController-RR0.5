@@ -8,7 +8,6 @@ public class GlobalValues {
     public static int down = 0;
     public static int high = 1600;
     public static int low = 700;
-
     public static double twistdrop = 0.13;
     public static double twistpickup= 0.81;
     public static double linksdrop = 0.88;
@@ -17,6 +16,8 @@ public class GlobalValues {
     public static double rechtsdrop = 0.14;
     public static double rechtspickup = 0.45;
     public static double rechts1drop = 0.3;
+
+
 
     public static int baby = 60;
 }
