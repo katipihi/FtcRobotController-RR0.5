@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -30,6 +31,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
 @Autonomous
+@Disabled
 public class REDRIGHTREAL extends LinearOpMode {
     private DcMotor leftFront;
     private DcMotor rightFront;

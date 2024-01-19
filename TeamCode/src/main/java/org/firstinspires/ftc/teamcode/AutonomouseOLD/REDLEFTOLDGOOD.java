@@ -1,8 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomouse;
-
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.leftmid;
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.planeinit;
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.rightmid;
+package org.firstinspires.ftc.teamcode.AutonomouseOLD;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -18,6 +14,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Autonomouse.ContourPipeline;
+import org.firstinspires.ftc.teamcode.Autonomouse.PoseStorage;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
@@ -29,7 +27,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
 @Autonomous
-public class REDLEFTREALREAL extends LinearOpMode {
+public class REDLEFTOLDGOOD extends LinearOpMode {
     private DcMotor leftFront;
     private DcMotor rightFront;
     private DcMotor leftRear;
@@ -37,13 +35,8 @@ public class REDLEFTREALREAL extends LinearOpMode {
     private OpenCvCamera webcam;
     private DcMotor slides;
     private Servo twist;
-    private Servo plane;
-
     private Servo linksklauw;
     private Servo rechtsklauw;
-
-    private Servo lefthang;
-    private Servo righthang;
     private TrajectoryFollower follower;
 
     private static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
@@ -86,9 +79,9 @@ public class REDLEFTREALREAL extends LinearOpMode {
     public boolean Sensitive = false;
 
     double waitstick;
-    double WaitBeforePush = 0.0;
-    double WaitBeforeScore = 0.75;
-    double WaitBeforePark = 0.75;
+    double WaitBeforePush = 1.5;
+    double WaitBeforeScore = 1.5;
+    double WaitBeforePark = 1.5;
     double Chill = 1.5;
 
 
@@ -106,7 +99,7 @@ public class REDLEFTREALREAL extends LinearOpMode {
     }
 
     TradWifeState currentstate = TradWifeState.idol;
-    Pose2d startPose = (new Pose2d(-39, -64, Math.toRadians(90)));
+    Pose2d startPose = (new Pose2d(15, 64, Math.toRadians(270)));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -120,10 +113,6 @@ public class REDLEFTREALREAL extends LinearOpMode {
         slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slides.setDirection(DcMotor.Direction.REVERSE);
         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        righthang = hardwareMap.servo.get(ConfigurationName.righthang);
-
-        lefthang = hardwareMap.servo.get(ConfigurationName.lefthang);
-        plane = hardwareMap.servo.get(ConfigurationName.plane);
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();
 
@@ -162,39 +151,33 @@ public class REDLEFTREALREAL extends LinearOpMode {
 
         TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
 //                .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
-                .lineToConstantHeading(new Vector2d(-39, 3-8.5))
-                .lineToConstantHeading(new Vector2d(-25, -38.5))
+                .lineToConstantHeading(new Vector2d(15, 38.5))
+                .lineToConstantHeading(new Vector2d(1, 38.5))
                 .build();
         TrajectorySequence StartToMiddle = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-40.5,-31.5))
+                .lineToConstantHeading(new Vector2d(16.5,31.5))
                 .build();
         TrajectorySequence StartToLeft = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-46,-42,Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(22,42,Math.toRadians(270)))
                 .build();
         TrajectorySequence LeftToBaby = drive.trajectorySequenceBuilder(StartToLeft.end())
-                .lineToLinearHeading(new Pose2d(-32, -59, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(22, -59, Math.toRadians(0)))
-                .addDisplacementMarker(55, () -> {
-                    slides.setTargetPosition(300);
-                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                })
+                .lineToLinearHeading(new Pose2d(22, 48, Math.toRadians(270)))
                 .build();
         TrajectorySequence RightToBaby = drive.trajectorySequenceBuilder(StartToRight.end())
-                .lineToConstantHeading(new Vector2d(-13,-39.5))
+                .lineToConstantHeading(new Vector2d(13,39.5))
                 .build();
         TrajectorySequence MiddleToBaby = drive.trajectorySequenceBuilder(StartToMiddle.end())
-                .lineToLinearHeading(new Pose2d(-14, -40, Math.toRadians(305)))
+                .lineToLinearHeading(new Pose2d(14, 40, Math.toRadians(305)))
                 .build();
         TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(LeftToBaby.end())
-                .lineToLinearHeading(new Pose2d(50, -35.5, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(49, 43, Math.toRadians(0)))
                 .build();
         TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(RightToBaby.end())
-                .lineToLinearHeading(new Pose2d(-50, -29, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(50, 29, Math.toRadians(0)))
                 .build();
         TrajectorySequence MiddleTo2 = drive.trajectorySequenceBuilder(MiddleToBaby.end())
-                .splineToLinearHeading(new Pose2d(-50, -35.5, Math.toRadians(0)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(50, 35.5, Math.toRadians(0)), Math.toRadians(0))
                 .build();
-
         TrajectorySequence BabyParkRight = drive.trajectorySequenceBuilder(RightTo3.end())
 //                .lineTo(new Vector2d(45,-29))
                 .lineToConstantHeading(new Vector2d(41,35.5))
@@ -262,6 +245,7 @@ public class REDLEFTREALREAL extends LinearOpMode {
                 }
             }
 
+
             waitstick = -(gamepad1.right_stick_y / 10000);
             if (PushWait) {
                 telemetry.addLine("Changing Wait Before Push");
@@ -295,7 +279,8 @@ public class REDLEFTREALREAL extends LinearOpMode {
                 telemetry.addLine("Park Right:}");
             }
             telemetry.addLine();
-            telemetry.addLine("Triggers = Change Park");
+            telemetry.addLine("Right Trigger = Park More Right");
+            telemetry.addLine("Left Trigger = Park More Left");
             if (gamepad1.a) {
                 PushWait = true;
                 ScoreWait = false;
@@ -345,10 +330,6 @@ public class REDLEFTREALREAL extends LinearOpMode {
                 }
             }
             linksklauw.setPosition(GlobalValues.linkspickup);
-            lefthang.setPosition(leftmid);
-            righthang.setPosition(rightmid);
-            plane.setPosition(planeinit);
-            rechtsklauw.setPosition(GlobalValues.rechtspickup);
             rechtsklauw.setPosition(GlobalValues.rechtspickup);
 
 
@@ -408,7 +389,7 @@ public class REDLEFTREALREAL extends LinearOpMode {
                             } else {
                                 drive.followTrajectorySequenceAsync(MiddleToBaby);
                             }
-                            slides.setTargetPosition(25);
+                            slides.setTargetPosition(275);
                             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             currentstate = TradWifeState.ToScore;
                         }
@@ -430,14 +411,15 @@ public class REDLEFTREALREAL extends LinearOpMode {
                             twist.setPosition(GlobalValues.twistdrop);
                             currentstate = TradWifeState.WaitBeforePark;
                         }
-                            break;
+                        break;
 
 
                     case WaitBeforePark:
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
+                            linksklauw.setPosition(GlobalValues.linksdrop);
                             currentstate = TradWifeState.ToBabyPark;
-                            rechtsklauw.setPosition(GlobalValues.rechtsdrop);
+                            linksklauw.setPosition(GlobalValues.linksdrop);
                         }
                         break;
                     case ToBabyPark:
