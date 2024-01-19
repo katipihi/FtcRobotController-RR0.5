@@ -94,6 +94,7 @@ import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
  */
 
 @TeleOp(name="Sensortest", group ="Concept")
+@Disabled
 public class SensorTest extends LinearOpMode
 {
     ColorSensor rechtssensor;

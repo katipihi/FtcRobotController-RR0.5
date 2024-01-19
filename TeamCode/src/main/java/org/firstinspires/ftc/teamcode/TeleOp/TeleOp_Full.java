@@ -91,10 +91,10 @@ public class TeleOp_Full extends LinearOpMode {
     private Servo lefthang;
     private Servo righthang;
     public boolean lefttwisted;
-    public boolean righttwisted;
+    public boolean bothclosed;
     public boolean sensor = false;
 
-    public boolean rightrumbled = false;
+    public boolean rumbled = false;
     public boolean leftrumbled = false;
     double TwistWait = 1.0;
 
@@ -263,7 +263,7 @@ public class TeleOp_Full extends LinearOpMode {
                         slides.setTargetPosition(slides.getCurrentPosition() + 15);
                         slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     }
-                    if (gamepad1.touchpad){
+                    if (gamepad2.touchpad){
                         sensor = true;
                     } else {
                         sensor = false;
@@ -360,7 +360,7 @@ public class TeleOp_Full extends LinearOpMode {
             telemetry.addData("Slides: ", slides.getCurrentPosition());
             telemetry.addData("SlidesTarget: ", slides.getTargetPosition());
             if (sensor) {
-                if (linkssensor.getDistance(DistanceUnit.MM)<70) {
+                if (rechtsssensor.getDistance(DistanceUnit.MM)<70) {
                     rechtsklauw.setPosition(rechtspickup);
                 }
                 if (linkssensor.getDistance(DistanceUnit.MM)<70) {
@@ -384,32 +384,30 @@ public class TeleOp_Full extends LinearOpMode {
             } else if (slides.isBusy() == false && slidespower == 0) {
                 slides.setPower(0);
             }
-            if (rechtsklauw.getPosition() > 0.4) {
-                righttwisted = true;
+            if (rechtsklauw.getPosition() > 0.4 && linksklauw.getPosition() < 0.7 && linkssensor.getDistance(DistanceUnit.MM)<70 && rechtsssensor.getDistance(DistanceUnit.MM)<70) {
+                bothclosed = true;
             } else {
-                righttwisted = false;
+                bothclosed = false;
             }
-            if (righttwisted && !rightrumbled) {
-//                gamepad1.rumble(0.0,1.0,200);
-                gamepad1.rumble(0.0, 1.0, 200);
-                gamepad2.rumble(0.0, 1.0, 200);
-//                gamepad1.rumbleBlips(3);
+            if (bothclosed && !rumbled) {
+                gamepad1.rumble(1.0, 1.0, 200);
+                gamepad2.rumble(1.0, 1.0, 200);
             }
 
 
+//            if (linksklauw.getPosition() < 0.7) {
+//                lefttwisted = true;
+//            } else {
+//                lefttwisted = false;
+//            }
+//            if (lefttwisted && !leftrumbled) {
+//                gamepad1.rumble(1.0, 0.0, 250);
+//                gamepad2.rumble(1.0, 0.0, 250);
+//
+//            }
 
-            if (linksklauw.getPosition() < 0.7) {
-                lefttwisted = true;
-            } else {
-                lefttwisted = false;
-                leftrumbled = false;
-            }
-            if (lefttwisted && !leftrumbled) {
-                gamepad1.rumble(1.0, 0.0, 250);
-                gamepad2.rumble(1.0, 0.0, 250);
-
-            }
-
+//            rightrumbled = righttwisted;
+            rumbled = bothclosed;
 
 
             if (Math.abs(gamepad1.right_trigger) < 0.02) {
@@ -461,8 +459,6 @@ public class TeleOp_Full extends LinearOpMode {
             rightFront.setPower(frontRightPower);
             rightRear.setPower(backRightPower);
 
-            rightrumbled = righttwisted;
-            leftrumbled = lefttwisted;
 
             telemetry.update();
         }

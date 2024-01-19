@@ -121,7 +121,7 @@ public class TeleOp_RijdenAuto extends LinearOpMode {
 
     @Disabled
     @Config
-    @TeleOp(name="TeleOp_Full", group="linop")
+    @TeleOp(name="TeleOp_Ew", group="linop")
     public static class TeleOp_PP extends LinearOpMode {
 
 
