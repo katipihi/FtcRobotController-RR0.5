@@ -1,13 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.links1drop;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.linksdrop;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.linkspickup;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.rechts1drop;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.rechtsdrop;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.rechtspickup;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.twistdrop;
-import static org.firstinspires.ftc.teamcode.Utility.GlobalValues.twistpickup;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -31,21 +23,6 @@ public class TeleOp_Full extends LinearOpMode {
 
     public static double turnfactor;
     public static double maxspeed;
-
-
-
-    public static double leftlow = 0;
-    public static double lefthigh = 0.85;
-    public static double leftmid = 0.51;
-    public static double leftbabymid = 0.4;
-
-
-    public static double rightmid = 0.52;
-    public static double rightbabymid = 0.6;
-    public static double rightlow = 1;
-    public static double righthigh = 0.18;
-    public static double planeinit = 0.265;
-    public static double planeshoot = 0.4;
 
 
     public enum Slideys {
@@ -153,9 +130,9 @@ public class TeleOp_Full extends LinearOpMode {
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        lefthang.setPosition(leftmid);
-        righthang.setPosition(rightmid);
-        plane.setPosition(planeinit);
+        lefthang.setPosition(GlobalValues.leftmid);
+        righthang.setPosition(GlobalValues.rightmid);
+        plane.setPosition(GlobalValues.planeinit);
 
         ElapsedTime WaitTimer = new ElapsedTime();
 
@@ -177,13 +154,13 @@ public class TeleOp_Full extends LinearOpMode {
                         slideystate = Slideys.TWISTDROP;
                     }
                     if (gamepad2.square && controlstate.equals(controls.Normal)) {
-                        if (twist.getPosition() == twistpickup) {
+                        if (twist.getPosition() == GlobalValues.twistpickup) {
                             slides.setTargetPosition(0);
                             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideystate = Slideys.GROUND;
 
                         } else if (Math.abs(slides.getCurrentPosition()) > 250) {
-                            twist.setPosition(twistpickup);
+                            twist.setPosition(GlobalValues.twistpickup);
                             WaitTimer.reset();
                             slideystate = Slideys.TWISTPICKUP;
                         } else {
@@ -195,7 +172,7 @@ public class TeleOp_Full extends LinearOpMode {
                     break;
                 case TWISTDROP:
                     if (Math.abs(slides.getCurrentPosition() - 400) < 30) {
-                        twist.setPosition(twistdrop);
+                        twist.setPosition(GlobalValues.twistdrop);
                         slideystate = Slideys.GROUND;
                     }
                     break;
@@ -208,7 +185,7 @@ public class TeleOp_Full extends LinearOpMode {
                     break;
                 case TWISTEXTRA:
                     if (Math.abs(slides.getCurrentPosition()) > 250) {
-                        twist.setPosition(twistpickup);
+                        twist.setPosition(GlobalValues.twistpickup);
                         WaitTimer.reset();
                         slideystate = Slideys.TWISTPICKUP;
                     }
@@ -219,59 +196,52 @@ public class TeleOp_Full extends LinearOpMode {
                     gamepad2.setLedColor(0, 0, 1, Gamepad.LED_DURATION_CONTINUOUS);
                     if (twist.getPosition() > 0.5) {
                         if (gamepad2.left_trigger > 0.02) {
-                            linksklauw.setPosition(linkspickup);
+                            linksklauw.setPosition(GlobalValues.linkspickup);
                         }
                         if (gamepad2.right_trigger > 0.02) {
-                            rechtsklauw.setPosition(rechtspickup);
+                            rechtsklauw.setPosition(GlobalValues.rechtspickup);
                         }
                         if (gamepad2.left_bumper) {
-                            linksklauw.setPosition(linksdrop);
+                            linksklauw.setPosition(GlobalValues.linksdrop);
                         }
                         if (gamepad2.right_bumper) {
-                            rechtsklauw.setPosition(rechtsdrop);
+                            rechtsklauw.setPosition(GlobalValues.rechtsdrop);
                         }
 
                     }
                     if (twist.getPosition() < 0.5) {
                         if (gamepad2.left_trigger > 0.02) {
-                            rechtsklauw.setPosition(rechtspickup);
+                            rechtsklauw.setPosition(GlobalValues.rechtspickup);
                         }
                         if (gamepad2.right_trigger > 0.02) {
-                            linksklauw.setPosition(linkspickup);
+                            linksklauw.setPosition(GlobalValues.linkspickup);
                         }
                         if (gamepad2.left_bumper) {
-                            rechtsklauw.setPosition(rechtsdrop);
+                            rechtsklauw.setPosition(GlobalValues.rechtsdrop);
                         }
                         if (gamepad2.right_bumper) {
-                            linksklauw.setPosition(linksdrop);
+                            linksklauw.setPosition(GlobalValues.linksdrop);
                         }
 
                     }
 
                     if (gamepad2.right_stick_button) {
-                        twist.setPosition(twistpickup);
+                        twist.setPosition(GlobalValues.twistpickup);
                     }
                     if (gamepad2.left_stick_button && slides.getCurrentPosition() > 250) {
-                        twist.setPosition(twistdrop);
+                        twist.setPosition(GlobalValues.twistdrop);
                     }
 
                     if (gamepad2.cross) {
-                        linksklauw.setPosition(links1drop);
-                        rechtsklauw.setPosition(rechts1drop);
+                        linksklauw.setPosition(GlobalValues.links1drop);
+                        rechtsklauw.setPosition(GlobalValues.rechts1drop);
                     }
                     if (gamepad2.dpad_up) {
                         slides.setTargetPosition(slides.getCurrentPosition() + 15);
                         slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     }
-                    if (gamepad2.touchpad){
-                        sensor = true;
-                    } else {
-                        sensor = false;
-                    }
+                    sensor = gamepad2.touchpad;
 
-//                    if (gamepad2.share && slideystate != Slideys.GROUND) {
-//                        slideystate = Slideys.GROUND;
-//                    }
                     if (gamepad2.share){
                         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
@@ -282,16 +252,16 @@ public class TeleOp_Full extends LinearOpMode {
                     telemetry.addLine("NORMAALSLET");
                 break;
                 case Hangensmooth:
-                    gamepad2.setLedColor(1,0,0.91, Gamepad.LED_DURATION_CONTINUOUS);
+                    gamepad2.setLedColor(1,0,1, Gamepad.LED_DURATION_CONTINUOUS);
                     if (gamepad2.right_trigger>0.02){
-                        lefthang.setPosition(leftlow);
-                        righthang.setPosition(rightlow);
+                        lefthang.setPosition(GlobalValues.leftlow);
+                        righthang.setPosition(GlobalValues.rightlow);
                     } if (gamepad2.left_trigger>0.02) {
-                        lefthang.setPosition(lefthigh);
-                        righthang.setPosition(righthigh);}
+                        lefthang.setPosition(GlobalValues.lefthigh);
+                        righthang.setPosition(GlobalValues.righthigh);}
                     if (gamepad2.a){
-                        lefthang.setPosition(leftmid);
-                        righthang.setPosition(rightmid);
+                        lefthang.setPosition(GlobalValues.leftmid);
+                        righthang.setPosition(GlobalValues.rightmid);
                     }
                     if(gamepad2.touchpad){
                         controlstate = controls.Normal;
@@ -300,27 +270,27 @@ public class TeleOp_Full extends LinearOpMode {
                         controlstate = controls.Hangplane;
                     }
                     if (gamepad2.left_stick_button&&gamepad2.right_stick_button){
-                        plane.setPosition(planeshoot);
+                        plane.setPosition(GlobalValues.planeshoot);
                     }
                     telemetry.addLine("HANGENBITCH");
                 case Hangplane:
                     gamepad2.setLedColor(0,1,0, Gamepad.LED_DURATION_CONTINUOUS);
                     if (gamepad2.dpad_down){
-                        lefthang.setPosition(leftlow);
+                        lefthang.setPosition(GlobalValues.leftlow);
                     } if (gamepad2.dpad_left) {
-                        lefthang.setPosition(leftmid);
+                        lefthang.setPosition(GlobalValues.leftmid);
                     } if (gamepad2.dpad_right) {
-                        lefthang.setPosition(leftbabymid);
+                        lefthang.setPosition(GlobalValues.leftbabymid);
                     } if (gamepad2.dpad_up){
-                        lefthang.setPosition(lefthigh);
+                        lefthang.setPosition(GlobalValues.lefthigh);
                     } if (gamepad2.triangle){
-                        righthang.setPosition(righthigh);
+                        righthang.setPosition(GlobalValues.righthigh);
                     } if (gamepad2.circle){
-                        righthang.setPosition(rightmid);
+                        righthang.setPosition(GlobalValues.rightmid);
                     } if (gamepad2.square) {
-                        righthang.setPosition(rightbabymid);
+                        righthang.setPosition(GlobalValues.rightbabymid);
                     } if (gamepad2.cross){
-                        righthang.setPosition(rightlow);
+                        righthang.setPosition(GlobalValues.rightlow);
                     }
 
                     if(gamepad2.touchpad){
@@ -335,25 +305,6 @@ public class TeleOp_Full extends LinearOpMode {
 
             }
 
-//            if (gamepad2.right_bumper && gamepad2.left_bumper){
-//                gamepad2.setLedColor(1,0,0.91, Gamepad.LED_DURATION_CONTINUOUS);
-//                if (gamepad2.dpad_down){
-//                    lefthang.setPosition(leftlow);
-//                } if (gamepad2.dpad_left){
-//                    lefthang.setPosition(leftmid);
-//                } if (gamepad2.dpad_up){
-//                    lefthang.setPosition(lefthigh);
-//                }
-//
-//                if (gamepad2.triangle){
-//                    lefthang.setPosition(righthigh);
-//                } if (gamepad2.circle){
-//                    lefthang.setPosition(rightmid);
-//                } if (gamepad2.cross){
-//                    lefthang.setPosition(rightlow);
-//                }
-//            }
-
             telemetry.addData("Links: ", linksklauw.getPosition());
             telemetry.addData("Rechts: ", rechtsklauw.getPosition());
             telemetry.addData("Pols: ", twist.getPosition());
@@ -361,10 +312,10 @@ public class TeleOp_Full extends LinearOpMode {
             telemetry.addData("SlidesTarget: ", slides.getTargetPosition());
             if (sensor) {
                 if (rechtsssensor.getDistance(DistanceUnit.MM)<70) {
-                    rechtsklauw.setPosition(rechtspickup);
+                    rechtsklauw.setPosition(GlobalValues.rechtspickup);
                 }
                 if (linkssensor.getDistance(DistanceUnit.MM)<70) {
-                    linksklauw.setPosition(linkspickup);
+                    linksklauw.setPosition(GlobalValues.linkspickup);
                 }
             }
 
@@ -378,10 +329,10 @@ public class TeleOp_Full extends LinearOpMode {
                 slides.setPower(0.5);
             } else if (slides.isBusy() && slidespower != 0) {
                 slides.setPower(0.5);
-            } else if (slides.isBusy() == false && slidespower != 0) {
+            } else if (!slides.isBusy() && slidespower != 0) {
                 slides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 slides.setPower(slidespower);
-            } else if (slides.isBusy() == false && slidespower == 0) {
+            } else if (!slides.isBusy() && slidespower == 0) {
                 slides.setPower(0);
             }
             if (rechtsklauw.getPosition() > 0.4 && linksklauw.getPosition() < 0.7 && linkssensor.getDistance(DistanceUnit.MM)<70 && rechtsssensor.getDistance(DistanceUnit.MM)<70) {

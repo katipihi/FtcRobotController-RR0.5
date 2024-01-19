@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomouse;
 
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.leftmid;
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.planeinit;
-import static org.firstinspires.ftc.teamcode.TeleOp.TeleOp_Full.rightmid;
+
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -470,9 +468,9 @@ public class BLUELEFTREAL extends LinearOpMode {
                 }
             }
             linksklauw.setPosition(GlobalValues.linkspickup);
-            lefthang.setPosition(leftmid);
-            righthang.setPosition(rightmid);
-            plane.setPosition(planeinit);
+            lefthang.setPosition(GlobalValues.leftmid);
+            righthang.setPosition(GlobalValues.rightmid);
+            plane.setPosition(GlobalValues.planeinit);
             rechtsklauw.setPosition(GlobalValues.rechtspickup);
             rechtsklauw.setPosition(GlobalValues.rechtspickup);
 
