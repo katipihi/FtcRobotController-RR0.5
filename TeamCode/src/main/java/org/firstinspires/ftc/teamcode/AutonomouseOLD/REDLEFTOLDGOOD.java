@@ -27,6 +27,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
 @Autonomous
+
 public class REDLEFTOLDGOOD extends LinearOpMode {
     private DcMotor leftFront;
     private DcMotor rightFront;

@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
+import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,6 +18,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.RoadRunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
@@ -28,7 +30,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config
 @Autonomous
-@Disabled
 public class REDRIGHTREAL extends LinearOpMode {
     private DcMotor leftFront;
     private DcMotor rightFront;
@@ -91,11 +92,11 @@ public class REDRIGHTREAL extends LinearOpMode {
 
     double waitstick;
     double WaitBeforePush = 0.0;
-    double WaitBeforeScore = 0.75;
-    double WaitBeforeIntake = 0.75;
-    double WaitBeforeScore2 = 0.75;
+    double WaitBeforeScore = 0.5;
+    double WaitBeforeIntake = 0.5;
+    double WaitBeforeScore2 = 0.5;
     double WaitBeforePark = 0.75;
-    double WaitBeforePark2 = 1.0;
+    double WaitBeforePark2 = 0.5;
 
     double Chill = 1.5;
 
@@ -106,7 +107,7 @@ public class REDRIGHTREAL extends LinearOpMode {
         ToPush,
         WaitBeforeScore,
         WaitBeforeScore2,
-
+        Up,
         ToBabyScore,
         ToScore,
         WaitBeforePark,
@@ -231,9 +232,11 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(23,-10,Math.toRadians(180)),Math.toRadians(180))
                 .setReversed(false)
-                .lineToLinearHeading(new Pose2d(-63.35,-9.35,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-58,-9,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-62.5,-9,Math.toRadians(180)),SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(45))
                 .addDisplacementMarker(70, () -> {
-                    slides.setTargetPosition(110);
+                    slides.setTargetPosition(150);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(13, () -> {
@@ -248,9 +251,9 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(23,-10,Math.toRadians(180)),Math.toRadians(180))
                 .setReversed(false)
-                .lineToLinearHeading(new Pose2d(-62.5,-8.8,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-62.5,-9,Math.toRadians(180)))
                 .addDisplacementMarker(70, () -> {
-                    slides.setTargetPosition(105);
+                    slides.setTargetPosition(150);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(13, () -> {
@@ -267,11 +270,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .setReversed(false)
                 .lineToLinearHeading(new Pose2d(-62.5,-9,Math.toRadians(180)))
                 .addDisplacementMarker(70, () -> {
-                    slides.setTargetPosition(105);
-                    slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                })
-                .addDisplacementMarker(70, () -> {
-                    slides.setTargetPosition(105);
+                    slides.setTargetPosition(150);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(13, () -> {
@@ -309,7 +308,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(75, () -> {
-                    slides.setTargetPosition(500);
+                    slides.setTargetPosition(600);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(78, () -> {
@@ -319,14 +318,14 @@ public class REDRIGHTREAL extends LinearOpMode {
         TrajectorySequence IntakeToRight = drive.trajectorySequenceBuilder(RightToIntake.end())
                 .setReversed(true)
                 .lineToLinearHeading(new Pose2d(35,-11,Math.toRadians(180)))
-                .splineToLinearHeading(new Pose2d(49,-43,Math.toRadians(0)),Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(49,-38,Math.toRadians(0)),Math.toRadians(0))
                 .setReversed(false)
                 .addDisplacementMarker(10, () -> {
                     slides.setTargetPosition(0);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(75, () -> {
-                    slides.setTargetPosition(500);
+                    slides.setTargetPosition(600);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(78, () -> {
@@ -618,11 +617,20 @@ public class REDRIGHTREAL extends LinearOpMode {
                         }
                         break;
                     case WaitBeforeScore2:
-                        if (WaitTimer.seconds() >= 0.75) {
+                        if (WaitTimer.seconds() >= 0.5) {
                             WaitTimer.reset();
                             linksklauw.setPosition(GlobalValues.linkspickup);
-                            currentstate = TradWifeState.ToScorePt2;
+                            currentstate = TradWifeState.Up;
                             rechtsklauw.setPosition(GlobalValues.rechtspickup);
+                        }
+                        break;
+                    case Up:
+                        if (WaitTimer.seconds() >= 0.5) {
+                            WaitTimer.reset();
+                            slides.setTargetPosition(110);
+                            slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            currentstate = TradWifeState.ToScorePt2;
+
                         }
                         break;
                     case ToScorePt2:

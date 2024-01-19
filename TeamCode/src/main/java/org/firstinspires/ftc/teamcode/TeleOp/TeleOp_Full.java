@@ -240,11 +240,19 @@ public class TeleOp_Full extends LinearOpMode {
                         slides.setTargetPosition(slides.getCurrentPosition() + 15);
                         slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     }
-                    sensor = gamepad2.touchpad;
+                    if (gamepad2.touchpad) {
+                        if (rechtsssensor.getDistance(DistanceUnit.MM)<70) {
+                            rechtsklauw.setPosition(GlobalValues.rechtspickup);
+                        }
+                        if (linkssensor.getDistance(DistanceUnit.MM)<70) {
+                            linksklauw.setPosition(GlobalValues.linkspickup);
+                        }
+                    }
 
-                    if (gamepad2.share){
+                    if (gamepad2.share) {
                         slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     }
+
                     if (gamepad2.options&&gamepad2.share){
                         controlstate = controls.Hangensmooth;
                         gamepad2.rumbleBlips(3);
@@ -310,14 +318,10 @@ public class TeleOp_Full extends LinearOpMode {
             telemetry.addData("Pols: ", twist.getPosition());
             telemetry.addData("Slides: ", slides.getCurrentPosition());
             telemetry.addData("SlidesTarget: ", slides.getTargetPosition());
-            if (sensor) {
-                if (rechtsssensor.getDistance(DistanceUnit.MM)<70) {
-                    rechtsklauw.setPosition(GlobalValues.rechtspickup);
-                }
-                if (linkssensor.getDistance(DistanceUnit.MM)<70) {
-                    linksklauw.setPosition(GlobalValues.linkspickup);
-                }
-            }
+            telemetry.addData("Linkssensor: ", linkssensor.getDistance(DistanceUnit.MM));
+            telemetry.addData("Rechtssensor: ", rechtsssensor.getDistance(DistanceUnit.MM));
+
+
 
 
             double cl = -gamepad2.left_stick_y; // Remember, this is reversed!
@@ -346,18 +350,7 @@ public class TeleOp_Full extends LinearOpMode {
             }
 
 
-//            if (linksklauw.getPosition() < 0.7) {
-//                lefttwisted = true;
-//            } else {
-//                lefttwisted = false;
-//            }
-//            if (lefttwisted && !leftrumbled) {
-//                gamepad1.rumble(1.0, 0.0, 250);
-//                gamepad2.rumble(1.0, 0.0, 250);
-//
-//            }
 
-//            rightrumbled = righttwisted;
             rumbled = bothclosed;
 
 
