@@ -67,13 +67,16 @@ public class TeleOp_Full extends LinearOpMode {
 
     private Servo lefthang;
     private Servo righthang;
-    public boolean lefttwisted;
-    public boolean bothclosed;
-    public boolean sensor = false;
+    public boolean leftfull;
+    public boolean rightfull;
 
-    public boolean rumbled = false;
+    public boolean sensor = false;
     public boolean leftrumbled = false;
-    double TwistWait = 1.0;
+    public boolean rightrumbled = false;
+
+    private DistanceSensor boardsensor;
+
+    double Chill = 0.5;
 
     BNO055IMU imu;
 
@@ -118,6 +121,7 @@ public class TeleOp_Full extends LinearOpMode {
 
         rechtsssensor = hardwareMap.get(DistanceSensor.class, ConfigurationName.rechtssensor);
 
+        boardsensor = hardwareMap.get(DistanceSensor.class, ConfigurationName.boardsensor);
 
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -154,7 +158,7 @@ public class TeleOp_Full extends LinearOpMode {
                         slideystate = Slideys.TWISTDROP;
                     }
                     if (gamepad2.square && controlstate.equals(controls.Normal)) {
-                        if (twist.getPosition() == GlobalValues.twistpickup) {
+                        if (twist.getPosition()>0.8&&twist.getPosition()<0.85) {
                             slides.setTargetPosition(0);
                             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideystate = Slideys.GROUND;
@@ -177,7 +181,7 @@ public class TeleOp_Full extends LinearOpMode {
                     }
                     break;
                 case TWISTPICKUP:
-                    if (WaitTimer.seconds() >= TwistWait) {
+                    if (WaitTimer.seconds() >= Chill) {
                         slides.setTargetPosition(0);
                         slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         slideystate = Slideys.GROUND;
@@ -241,10 +245,10 @@ public class TeleOp_Full extends LinearOpMode {
                         slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     }
                     if (gamepad2.touchpad) {
-                        if (rechtsssensor.getDistance(DistanceUnit.MM)<70) {
+                        if (rechtsssensor.getDistance(DistanceUnit.MM)<90) {
                             rechtsklauw.setPosition(GlobalValues.rechtspickup);
                         }
-                        if (linkssensor.getDistance(DistanceUnit.MM)<70) {
+                        if (linkssensor.getDistance(DistanceUnit.MM)<90) {
                             linksklauw.setPosition(GlobalValues.linkspickup);
                         }
                     }
@@ -321,6 +325,8 @@ public class TeleOp_Full extends LinearOpMode {
             telemetry.addData("SlidesTarget: ", slides.getTargetPosition());
             telemetry.addData("Linkssensor: ", linkssensor.getDistance(DistanceUnit.MM));
             telemetry.addData("Rechtssensor: ", rechtsssensor.getDistance(DistanceUnit.MM));
+            telemetry.addData("Boardsensor: ", boardsensor.getDistance(DistanceUnit.MM));
+
 
 
 
@@ -340,19 +346,40 @@ public class TeleOp_Full extends LinearOpMode {
             } else if (!slides.isBusy() && slidespower == 0) {
                 slides.setPower(0);
             }
-            if (rechtsklauw.getPosition() > 0.4 && linksklauw.getPosition() < 0.7 && linkssensor.getDistance(DistanceUnit.MM)<70 && rechtsssensor.getDistance(DistanceUnit.MM)<70) {
-                bothclosed = true;
+
+
+//            if (rechtsklauw.getPosition() > 0.4 && linksklauw.getPosition() < 0.7 && linkssensor.getDistance(DistanceUnit.MM)<70 && rechtsssensor.getDistance(DistanceUnit.MM)<70) {
+//                bothclosed = true;
+//            } else {
+//                bothclosed = false;
+//            }
+//            if (bothclosed && !rumbled) {
+//                gamepad1.rumble(1.0, 1.0, 200);
+//                gamepad2.rumble(1.0, 1.0, 200);
+//            }
+//
+//            rumbled = bothclosed;
+            if(linksklauw.getPosition()<0.7&& linkssensor.getDistance(DistanceUnit.MM)<80){
+                leftfull = true;
             } else {
-                bothclosed = false;
+                leftfull = false;
             }
-            if (bothclosed && !rumbled) {
-                gamepad1.rumble(1.0, 1.0, 200);
-                gamepad2.rumble(1.0, 1.0, 200);
+            if (leftfull && !leftrumbled){
+                gamepad1.rumble(0.75,0,250);
+                gamepad2.rumble(0.75,0,250);
             }
+            leftrumbled = leftfull;
 
-
-
-            rumbled = bothclosed;
+            if(rechtsklauw.getPosition()>0.4&& rechtsssensor.getDistance(DistanceUnit.MM)<80){
+                rightfull = true;
+            } else {
+                rightfull = false;
+            }
+            if (rightfull && !rightrumbled){
+                gamepad1.rumble(0.15,1.0,250);
+                gamepad2.rumble(0.15,1.0,250);
+            }
+            rightrumbled = rightfull;
 
 
             if (Math.abs(gamepad1.right_trigger) < 0.02) {

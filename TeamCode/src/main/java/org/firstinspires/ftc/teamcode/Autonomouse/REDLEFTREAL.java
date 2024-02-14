@@ -158,7 +158,7 @@ public class REDLEFTREAL extends LinearOpMode {
 
         TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
 //                .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
-                .lineToConstantHeading(new Vector2d(-39, 3-8.5))
+                .lineToConstantHeading(new Vector2d(-39, -38.5))
                 .lineToConstantHeading(new Vector2d(-25, -38.5))
                 .build();
         TrajectorySequence StartToMiddle = drive.trajectorySequenceBuilder(startPose)

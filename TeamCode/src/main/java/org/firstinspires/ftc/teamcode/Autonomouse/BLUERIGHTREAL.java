@@ -111,7 +111,7 @@ public class BLUERIGHTREAL extends LinearOpMode {
     }
 
     TradWifeState currentstate = TradWifeState.idol;
-    Pose2d startPose = (new Pose2d(15, -64, Math.toRadians(90)));
+    Pose2d startPose = (new Pose2d(15, -64, Math.toRadians(270)));
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -163,14 +163,14 @@ public class BLUERIGHTREAL extends LinearOpMode {
 
         TrajectorySequence StartToLeft = drive.trajectorySequenceBuilder(startPose)
 //                .splineToLinearHeading(new Pose2d(12,-31,Math.toRadians(180)),Math.toRadians(180))
-                .lineToConstantHeading(new Vector2d(15, -38.5))
-                .lineToConstantHeading(new Vector2d(1, -38.5))
+                .lineToConstantHeading(new Vector2d(-39, 38.5))
+                .lineToConstantHeading(new Vector2d(-25, 38.5))
                 .build();
         TrajectorySequence StartToMiddle = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(16.5,-31.5))
+                .lineToConstantHeading(new Vector2d(-40.5,31.5))
                 .build();
         TrajectorySequence StartToRight = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(22,-42,Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-46,42,Math.toRadians(270)))
                 .build();
         TrajectorySequence RightToBaby = drive.trajectorySequenceBuilder(StartToRight.end())
                 .lineToLinearHeading(new Pose2d(22, -48, Math.toRadians(90)))

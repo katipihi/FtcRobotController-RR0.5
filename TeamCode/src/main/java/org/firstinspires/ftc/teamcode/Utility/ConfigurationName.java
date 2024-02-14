@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Utility;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
+
 public class ConfigurationName {
 
     // Drivetrain
@@ -25,5 +29,7 @@ public class ConfigurationName {
     // KlauwSensoren
     public static String linkssensor = "lss";
     public static String rechtssensor = "rss";
+    public static String boardsensor = "bss";
+
 
 }

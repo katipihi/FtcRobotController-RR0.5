@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Utility;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
+
 public class GlobalValues {
     public static double servoopen = 0.55;
     public static double servoclosed = 0.87;
@@ -9,12 +13,12 @@ public class GlobalValues {
     public static int high = 1600;
     public static int low = 700;
     public static double twistdrop = 0.13;
-    public static double twistpickup= 0.81;
-    public static double linksdrop = 0.88;
-    public static double linkspickup = 0.62;
+    public static double twistpickup= 0.83;
+    public static double linksdrop = 0.74;
+    public static double linkspickup = 0.23;
     public static double links1drop = 0.7;
-    public static double rechtsdrop = 0.14;
-    public static double rechtspickup = 0.45;
+    public static double rechtsdrop = 0.19;
+    public static double rechtspickup = 0.7;
     public static double rechts1drop = 0.3;
 
     public static double leftlow = 0;
