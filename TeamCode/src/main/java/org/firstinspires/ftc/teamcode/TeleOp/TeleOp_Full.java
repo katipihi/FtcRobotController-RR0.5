@@ -264,13 +264,13 @@ public class TeleOp_Full extends LinearOpMode {
                     if (gamepad2.right_trigger>0.02){
                         lefthang.setPosition(GlobalValues.leftlow);
                         righthang.setPosition(GlobalValues.rightlow);
-                    } if (gamepad2.left_trigger>0.02) {
+                    } if (gamepad2.left_trigger>0.02 && lefthang.getPosition()>0.6 && lefthang.getPosition()<0.4) {
                         lefthang.setPosition(GlobalValues.lefthigh);
                         righthang.setPosition(GlobalValues.righthigh);}
-                    if (gamepad2.a){
-                        lefthang.setPosition(GlobalValues.leftmid);
-                        righthang.setPosition(GlobalValues.rightmid);
-                    }
+//                    if (gamepad2.a){
+//                        lefthang.setPosition(GlobalValues.leftmid);
+//                        righthang.setPosition(GlobalValues.rightmid);
+//                    }
                     if(gamepad2.touchpad){
                         controlstate = controls.Normal;
                     }
@@ -281,6 +281,7 @@ public class TeleOp_Full extends LinearOpMode {
                         plane.setPosition(GlobalValues.planeshoot);
                     }
                     telemetry.addLine("HANGENBITCH");
+                    break;
                 case Hangplane:
                     gamepad2.setLedColor(0,1,0, Gamepad.LED_DURATION_CONTINUOUS);
                     if (gamepad2.dpad_down){
