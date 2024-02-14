@@ -252,9 +252,9 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(23,-10,Math.toRadians(180)),Math.toRadians(180))
                 .setReversed(false)
-                .lineToLinearHeading(new Pose2d(-62.5,-9,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-62.5,-9.5,Math.toRadians(180)))
                 .addDisplacementMarker(70, () -> {
-                    slides.setTargetPosition(150);
+                    slides.setTargetPosition(160);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(13, () -> {
@@ -269,9 +269,9 @@ public class REDRIGHTREAL extends LinearOpMode {
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(23,-10,Math.toRadians(180)),Math.toRadians(180))
                 .setReversed(false)
-                .lineToLinearHeading(new Pose2d(-62.5,-9,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-62.5,-9.5,Math.toRadians(180)))
                 .addDisplacementMarker(70, () -> {
-                    slides.setTargetPosition(150);
+                    slides.setTargetPosition(160);
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(13, () -> {

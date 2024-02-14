@@ -617,7 +617,7 @@ public class BLUELEFTREAL extends LinearOpMode {
                         if (!drive.isBusy() && WaitTimer.seconds() >= WaitBeforePark2) {
                             WaitTimer.reset();
                             currentstate = TradWifeState.ToBabyPark;
-                            rechtsklauw.setPosition(GlobalValues.rechtsdrop);
+                            linksklauw.setPosition(GlobalValues.linksdrop);
                         }
                         break;
                     case ToBabyPark:
