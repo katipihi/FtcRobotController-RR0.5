@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunner.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.Utility.ConfigurationName;
 import org.firstinspires.ftc.teamcode.Utility.GlobalValues;
+import org.firstinspires.ftc.teamcode.Utility.LoopTime;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -474,6 +475,7 @@ public class BLUELEFTREAL extends LinearOpMode {
             rechtsklauw.setPosition(GlobalValues.rechtspickup);
             rechtsklauw.setPosition(GlobalValues.rechtspickup);
 
+            LoopTime loopTime = new LoopTime();
 
             telemetry.update();
             while (opModeIsActive()) {
@@ -668,6 +670,7 @@ public class BLUELEFTREAL extends LinearOpMode {
                 Pose2d poseEstimate = drive.getPoseEstimate();
 
                 PoseStorage.currentPose = poseEstimate;
+                telemetry.addData("Hz", 1/loopTime.getLoopTime(getRuntime()));
 
                 // Print pose to telemetry
                 telemetry.addData("x", poseEstimate.getX());
