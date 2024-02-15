@@ -268,7 +268,7 @@ public class TeleOp_Full extends LinearOpMode {
                     if (gamepad2.right_trigger>0.02){
                         lefthang.setPosition(GlobalValues.leftlow);
                         righthang.setPosition(GlobalValues.rightlow);
-                    } if (gamepad2.left_trigger>0.02 && lefthang.getPosition()>0.6 && lefthang.getPosition()<0.4) {
+                    } if (gamepad2.left_trigger>0.02 && lefthang.getPosition()<0.4 && righthang.getPosition()>0.6) {
                         lefthang.setPosition(GlobalValues.lefthigh);
                         righthang.setPosition(GlobalValues.righthigh);}
 //                    if (gamepad2.a){

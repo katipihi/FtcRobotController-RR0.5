@@ -188,9 +188,7 @@ public class REDLEFTREAL extends LinearOpMode {
         TrajectorySequence LeftTo1 = drive.trajectorySequenceBuilder(LeftToBaby.end())
                 .lineToLinearHeading(new Pose2d(50, -29, Math.toRadians(0)))
                 .addDisplacementMarker(5, () -> {
-                    if (slides.getCurrentPosition()>250) {
                         twist.setPosition(GlobalValues.twistdrop);
-                    }
                 })
                 .build();
         TrajectorySequence RightTo3 = drive.trajectorySequenceBuilder(RightToBaby.end())
@@ -201,9 +199,8 @@ public class REDLEFTREAL extends LinearOpMode {
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(65, () -> {
-                    if (slides.getCurrentPosition()>250) {
                         twist.setPosition(GlobalValues.twistdrop);
-                    }
+
                 })
                 .build();
 
@@ -214,9 +211,8 @@ public class REDLEFTREAL extends LinearOpMode {
                     slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 })
                 .addDisplacementMarker(57, () -> {
-                    if (slides.getCurrentPosition()>250) {
                         twist.setPosition(GlobalValues.twistdrop);
-                    }                })
+                                 })
                 .build();
 
         TrajectorySequence BabyParkLeft = drive.trajectorySequenceBuilder(LeftTo1.end())
