@@ -13,11 +13,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RoadRunner.trajectorysequence.TrajectorySequence;
@@ -32,10 +34,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Config
 @Autonomous
 public class REDRIGHTREAL extends LinearOpMode {
-    private DcMotor leftFront;
-    private DcMotor rightFront;
-    private DcMotor leftRear;
-    private DcMotor rightRear;
+
     private OpenCvCamera webcam;
     private DcMotor slides;
     private Servo twist;
@@ -46,6 +45,8 @@ public class REDRIGHTREAL extends LinearOpMode {
 
     private Servo lefthang;
     private Servo righthang;
+    private DistanceSensor boardsensor;
+
     private TrajectoryFollower follower;
 
     private static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
@@ -141,6 +142,8 @@ public class REDRIGHTREAL extends LinearOpMode {
 
         lefthang = hardwareMap.servo.get(ConfigurationName.lefthang);
         plane = hardwareMap.servo.get(ConfigurationName.plane);
+        boardsensor = hardwareMap.get(DistanceSensor.class, ConfigurationName.boardsensor);
+
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();
 
@@ -581,6 +584,7 @@ public class REDRIGHTREAL extends LinearOpMode {
                             slides.setTargetPosition(550);
                             slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             twist.setPosition(GlobalValues.twistdrop);
+
                             if (JustPark) {
                                 currentstate = TradWifeState.WaitBeforePark;
                             } else if (AndTwo){
@@ -592,6 +596,9 @@ public class REDRIGHTREAL extends LinearOpMode {
                         break;
 
                     case WaitBeforeIntake:
+                        if (boardsensor.getDistance(DistanceUnit.MM)<40){
+                            drive.breakFollowing();
+                        }
                         if (!drive.isBusy()) {
                             WaitTimer.reset();
                             currentstate = TradWifeState.ToIntake;
@@ -717,8 +724,10 @@ public class REDRIGHTREAL extends LinearOpMode {
                 Pose2d poseEstimate = drive.getPoseEstimate();
 
                 PoseStorage.currentPose = poseEstimate;
-                telemetry.addData("Hz", 1/loopTime.getLoopTime(getRuntime()));
+                telemetry.addData("Looptime:", loopTime.getLoopTime(getRuntime()));
 
+                telemetry.addData("Hz:", 1/loopTime.getLoopTime(getRuntime()));
+                telemetry.addData("Boardsensor:", boardsensor.getDistance(DistanceUnit.MM));
 
                 // Print pose to telemetry
                 telemetry.addData("x", poseEstimate.getX());
